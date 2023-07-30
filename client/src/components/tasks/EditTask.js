@@ -70,50 +70,20 @@ const EditTask = () => {
     return typeof text === "string";
   };
 
+  // Helper function to check if a field is empty
+  const isEmpty = (value) => value.trim() === "";
+
+  // Validate form fields and set error messages
   const isFormValid = () => {
-    // Clear previous error messages
-    setErrors({
-      title: "",
-      description: "",
-      assignedTo: "",
-      projects: "",
-    });
+    const errors = {
+      title: isEmpty(title) ? "Task title is required." : "",
+      description: isEmpty(description) ? "Task description is required." : "",
+      assignedTo: isAtLeastOneSelected(assignedTo) ? "" : "At least one user should be selected.",
+      projects: isAtLeastOneSelected(selectedProjects) ? "" : "At least one project should be selected.",
+    };
+    setErrors(errors);
 
-    let isValid = true;
-
-    if (!isString(title)) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        title: "Task title should be a string.",
-      }));
-      isValid = false;
-    }
-
-    if (!isString(description)) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        description: "Task description should be a string.",
-      }));
-      isValid = false;
-    }
-
-    if (!isAtLeastOneSelected(assignedTo)) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        assignedTo: "At least one user should be selected.",
-      }));
-      isValid = false;
-    }
-
-    if (!isAtLeastOneSelected(selectedProjects)) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        projects: "At least one project should be selected.",
-      }));
-      isValid = false;
-    }
-
-    return isValid;
+    return Object.values(errors).every((error) => error === "");
   };
 
   const onSubmit = async (e) => {
@@ -162,6 +132,7 @@ const EditTask = () => {
       console.error("Error loading projects:", error);
     }
   };
+
   const isAnyRequiredFieldEmpty = () => {
     return !title.trim() || !description.trim() || !isAtLeastOneSelected(assignedTo) || !isAtLeastOneSelected(selectedProjects);
   };

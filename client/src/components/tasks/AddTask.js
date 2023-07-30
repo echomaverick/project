@@ -5,94 +5,123 @@ import "../styles/loader.css"; // Import the loader CSS file
 
 const AddTask = () => {
   let history = useHistory();
-  const [task, setTask] = useState({
-    title: "",
-    description: "",
-    assignedTo: [],
-  });
-  const [loading, setLoading] = useState(true); // State to manage loading state, set it to true initially
-  const [isComponentMounted, setComponentMounted] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [availableUsers, setAvailableUsers] = useState([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false); // Set initial loading state to false
 
-  const { title, description, assignedTo } = task;
+  useEffect(() => {
+    fetchAvailableData();
+  }, []);
 
-  const validateForm = () => {
-    return title.trim() !== "" && description.trim() !== "" && assignedTo.length > 0;
+  const fetchAvailableData = async () => {
+    try {
+      const usersResponse = await axios.get("http://localhost:5000/api/users");
+      setAvailableUsers(usersResponse.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
   };
 
-  const onSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) {
-      alert("Please fill in all required fields.");
+
+    const taskNameRegex = /^[A-Za-z\s]+$/;
+    if (!taskNameRegex.test(title)) {
+      setError("Task title should only contain letters and spaces.");
       return;
     }
-    setLoading(true); // Show loader when form submission starts
+
+    const taskDescriptionRegex = /^[A-Za-z\s]+$/;
+    if (!taskDescriptionRegex.test(description)) {
+      setError("Task description should only contain letters and spaces.");
+      return;
+    }
+
+    if (selectedUsers.length === 0) {
+      setError("Please select at least one user.");
+      return;
+    }
+
+    setError("");
+    setLoading(true);
+
+    const taskData = {
+      title,
+      description,
+      assignedTo: selectedUsers,
+    };
 
     try {
-      await axios.post("http://localhost:5000/api/tasks", task);
-      setLoading(false); // Hide loader when task is successfully added
-      history.push("/");
+      await axios.post("http://localhost:5000/api/tasks", taskData);
+      setLoading(false); // Set loading to false on success
+      history.push("/tasks");
     } catch (error) {
-      setLoading(false); // Hide loader in case of error
+      setLoading(false); // Set loading to false on error
       console.error("Error adding task:", error);
     }
   };
 
-  useEffect(() => {
-    // This will be executed after the component has mounted
-    setComponentMounted(true);
-  }, []);
-
-  useEffect(() => {
-    // This will be executed whenever the isComponentMounted state changes
-    if (isComponentMounted) {
-      setLoading(false); // Hide loader when the component has mounted
-    }
-  }, [isComponentMounted]);
+  const isButtonDisabled = !title || !description || selectedUsers.length === 0;
 
   return (
     <div className="container">
-      <div className="w-75 mx-auto p-5 shadow rounded">
-        <h2 className="text-center mb-4">Add A Task</h2>
-        <form onSubmit={onSubmit}>
+      <div className="w-75 mx-auto shadow p-5 rounded">
+        <h2 className="text-center mb-4">Add Task</h2>
+        {error && <div className="alert alert-danger">{error}</div>}
+        <form onSubmit={handleSubmit}>
           <div className="form-group mb-3">
             <input
               type="text"
+              id="name"
               className="form-control form-control-lg"
               placeholder="Enter Task Title"
-              name="title"
               value={title}
-              onChange={(e) => setTask({ ...task, title: e.target.value })}
+              onChange={(e) => setTitle(e.target.value)}
               required
             />
           </div>
           <div className="form-group mb-3">
             <input
               type="text"
+              id="description"
               className="form-control form-control-lg"
               placeholder="Enter Task Description"
-              name="description"
               value={description}
-              onChange={(e) => setTask({ ...task, description: e.target.value })}
+              onChange={(e) => setDescription(e.target.value)}
               required
             />
           </div>
           <div className="form-group mb-3">
-            <input
-              type="text"
+            <label htmlFor="users" className="form-label">
+              Select Users:
+            </label>
+            <select
+              multiple
               className="form-control form-control-lg"
-              placeholder="Enter User Ids(comma-separated)"
-              name="assignedTo"
-              value={assignedTo.join(", ")}
-              onChange={(e) => {
-                const usersArray = e.target.value.split(",").map((userId) => userId.trim());
-                setTask({ ...task, assignedTo: usersArray });
-              }}
+              id="users"
+              value={selectedUsers}
+              onChange={(e) =>
+                setSelectedUsers(Array.from(e.target.selectedOptions, (option) => option.value))
+              }
               required
-            />
+            >
+              {availableUsers.map((user) => (
+                <option key={user._id} value={user._id}>
+                  {user.name} {user.surname}
+                </option>
+              ))}
+            </select>
           </div>
-          <div className="text-center">
-            <button className="btn btn-primary btn-block" disabled={!validateForm()}>
-              Add task
+
+          <div className="d-flex justify-content-between">
+            <button type="button" className="btn btn-primary" onClick={() => history.push("/tasks")}>
+              Cancel
+            </button>
+            <button type="submit" className="btn btn-primary" disabled={isButtonDisabled || loading}>
+              Add Task
             </button>
           </div>
         </form>

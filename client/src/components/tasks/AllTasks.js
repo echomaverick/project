@@ -167,8 +167,7 @@ const AllTasks = () => {
 
             .col-md-6,
             .col-lg-4 {
-              padding-left: 8px;
-              padding-right: 8px;
+              padding-left: 0;
               width: 100%;
             }
 

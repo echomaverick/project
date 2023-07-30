@@ -64,16 +64,7 @@ const Home = () => {
   };
 
   return (
-    <div style={containerStyle}>
-      <div style={overlayStyle}></div>
-      <h1 style={headerStyle}>Welcome to ....</h1>
-      <p style={subheaderStyle}>Manage your tasks and collaborate with your team effortlessly.</p>
-      <div style={inputContainerStyle}>
-        <Link style={buttonStyle} to="">
-          Sign up for free
-        </Link>
-      </div>
-    </div>
+    <div></div>
   );
 };
 
