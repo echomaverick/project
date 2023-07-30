@@ -1,96 +1,89 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
 import "../styles/loader.css"; // Import the loader CSS file
 
 const AddUser = () => {
-  let history = useHistory();
-  const [user, setUser] = useState({
-    name: "",
-    surname: "",
-    username: "",
-    email: "",
-    role: "",
-  });
-  const [roles, setRoles] = useState([]);
+  const [name, setName] = useState("");
+  const [surname, setSurname] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [role, setRole] = useState(""); // New state for role selection
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(""); // State to manage error messages
+  const [error, setError] = useState("");
+  const history = useHistory();
 
-  const { name, surname, username, email, role } = user;
-
-  useEffect(() => {
-    fetchRoles();
-  }, []);
-
-  const fetchRoles = async () => {
-    try {
-      const response = await axios.get("http://localhost:5000/api/roles");
-      setRoles(response.data);
-    } catch (error) {
-      console.error("Error fetching roles:", error);
-    }
+  // Function to check if all required fields are filled
+  const areAllFieldsFilled = () => {
+    return name.trim() !== "" && surname.trim() !== "" && username.trim() !== "" && email.trim() !== "" && role.trim() !== "";
   };
 
-  const onInputChange = (e) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
-  };
-
-  const onSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // Clear any previous error
 
-    const nameRegex = /^[A-Za-z\s]+$/; // Regex to allow only letters and spaces
-    if (!nameRegex.test(name)) {
-      setError("User name should only contain letters and spaces.");
+    // Validate name, surname, and username
+    const nameSurnameRegex = /^[A-Za-z]{3,}$/;
+    if (!nameSurnameRegex.test(name) || !nameSurnameRegex.test(surname)) {
+      setError("Name and Surname should contain only alphabetic characters and be at least 3 characters long.");
       return;
     }
 
-    const surnameRegex = /^[A-Za-z\s]+$/; // Regex to allow only letters and spaces
-    if (!surnameRegex.test(surname)) {
-      setError("User surname should only contain letters and spaces.");
-      return;
-    }
-
-    const usernameRegex = /^[A-Za-z]+[A-Za-z0-9]*$/; // Regex to allow letters and numbers, starting with a letter
-    if (!usernameRegex.test(username)) {
-      setError("Username should start with a letter and may contain letters and numbers.");
-      return;
-    }
-
-    if (!name || !surname || !username || !email || !role) {
-      setError("Please fill in all required fields.");
+    const usernameRegex = /^[A-Za-z\d]{3,}$/;
+    if (!usernameRegex.test(username) || username === "1234") {
+      setError("Username should contain at least one letter, be at least 3 characters long, and should not be '1234'.");
       return;
     }
 
     setLoading(true);
+    setError("");
 
+    // Check if the role "admin" exists in the database
     try {
-      await axios.post("http://localhost:5000/api/users", user);
+      const roleResponse = await axios.get("http://localhost:5000/api/roles");
+      const existingRoles = roleResponse.data;
+      const adminRole = existingRoles.find((role) => role.name.toLowerCase() === "admin");
+
+      if (!adminRole) {
+        setError("The 'admin' role does not exist in the database.");
+        setLoading(false);
+        return;
+      }
+
+      const roleData = {
+        _id: adminRole._id,
+      };
+
+      const userData = {
+        name,
+        surname,
+        username,
+        email,
+        role: roleData,
+      };
+
+      const response = await axios.post("http://localhost:5000/api/users", userData);
+      console.log("User added successfully:", response.data);
       setLoading(false);
       history.push("/users");
     } catch (error) {
       setLoading(false);
-      setError("Error adding user.");
       console.error("Error adding user:", error);
     }
   };
 
-  const isButtonDisabled = !name || !surname || !username || !email || !role;
-
   return (
     <div className="container">
       <div className="w-75 mx-auto shadow p-5">
-        <h2 className="text-center mb-4">Add A User</h2>
-        <div className={`alert alert-danger ${error ? "d-block" : "d-none"}`}>{error}</div>
-        <form onSubmit={onSubmit}>
+        <h2 className="text-center mb-4">Add User</h2>
+        {error && <div className="alert alert-danger">{error}</div>}
+        <form onSubmit={handleSubmit}>
           <div className="form-group mb-3">
             <input
               type="text"
               className="form-control form-control-lg"
               placeholder="Enter Your Name"
-              name="name"
               value={name}
-              onChange={onInputChange}
+              onChange={(e) => setName(e.target.value)}
             />
           </div>
           <div className="form-group mb-3">
@@ -98,9 +91,8 @@ const AddUser = () => {
               type="text"
               className="form-control form-control-lg"
               placeholder="Enter Your Surname"
-              name="surname"
               value={surname}
-              onChange={onInputChange}
+              onChange={(e) => setSurname(e.target.value)}
             />
           </div>
           <div className="form-group mb-3">
@@ -108,9 +100,8 @@ const AddUser = () => {
               type="text"
               className="form-control form-control-lg"
               placeholder="Enter Your Username"
-              name="username"
               value={username}
-              onChange={onInputChange}
+              onChange={(e) => setUsername(e.target.value)}
             />
           </div>
           <div className="form-group mb-3">
@@ -118,29 +109,33 @@ const AddUser = () => {
               type="email"
               className="form-control form-control-lg"
               placeholder="Enter Your E-mail Address"
-              name="email"
               value={email}
-              onChange={onInputChange}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div className="form-group mb-3">
+            <label htmlFor="role" className="form-label">
+              Select Role:
+            </label>
             <select
               className="form-control form-control-lg"
-              name="role"
+              id="role"
               value={role}
-              onChange={onInputChange}
+              onChange={(e) => setRole(e.target.value)}
+              required
             >
-              <option value="">Select a Role</option>
-              {roles.map((role) => (
-                <option key={role._id} value={role._id}>
-                  {role.name}
-                </option>
-              ))}
+              <option value="" disabled>
+                Select a Role
+              </option>
+              <option value="admin">Admin</option>
             </select>
           </div>
-          <div className="text-center">
-            <button className="btn btn-primary btn-block" disabled={isButtonDisabled || loading}>
-              {loading ? "Adding User..." : "Add User"}
+          <div className="d-flex justify-content-start">
+            <button className="btn btn-primary me-2" disabled={!areAllFieldsFilled() || loading}>
+              Add User
+            </button>
+            <button className="btn btn-primary" onClick={() => history.push("/users")}>
+              Cancel
             </button>
           </div>
         </form>

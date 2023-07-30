@@ -33,38 +33,23 @@ const UserCard = ({ user, onDelete }) => {
           <div className="popup">
             <p>Are you sure you want to delete?</p>
             <div className="btn-group">
-              <button
-                className="btn btn-danger btn-rounded"
-                onClick={confirmDelete}
-              >
+              <button className="btn btn-danger btn-rounded" onClick={confirmDelete}>
                 Yes
               </button>
-              <button
-                className="btn btn-secondary btn-rounded"
-                onClick={cancelDelete}
-              >
+              <button className="btn btn-secondary btn-rounded" onClick={cancelDelete}>
                 No
               </button>
             </div>
           </div>
         ) : (
           <div className="btn-group">
-            <Link
-              className="btn btn-primary btn-rounded"
-              to={`/users/${user._id}`}
-            >
+            <Link className="btn btn-primary btn-rounded" to={`/users/${user._id}`}>
               View
             </Link>
-            <Link
-              className="btn btn-outline-primary btn-rounded"
-              to={`/users/edit/${user._id}`}
-            >
+            <Link className="btn btn-outline-primary btn-rounded" to={`/users/edit/${user._id}`}>
               Edit
             </Link>
-            <button
-              className="btn btn-danger btn-rounded ml-2"
-              onClick={handleDelete}
-            >
+            <button className="btn btn-danger btn-rounded ml-2" onClick={handleDelete}>
               Delete
             </button>
           </div>
@@ -78,6 +63,7 @@ const UserCard = ({ user, onDelete }) => {
 const AllUsers = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deletingUser, setDeletingUser] = useState(""); // State to track which user is currently being deleted
 
   useEffect(() => {
     loadUsers();
@@ -96,10 +82,13 @@ const AllUsers = () => {
 
   const deleteUser = async (id) => {
     try {
+      setDeletingUser(id); // Set the ID of the user that is being deleted
       await axios.delete(`http://localhost:5000/api/users/${id}`);
       loadUsers();
     } catch (error) {
       console.error("Error deleting user:", error);
+    } finally {
+      setDeletingUser(""); // Reset the deletingUser state when the deletion is complete
     }
   };
 
