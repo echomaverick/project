@@ -67,27 +67,13 @@ const Task = () => {
     }
   };
 
-  if (loading) {
-    return <Loader/>;
-  }
-
-  if (!task) {
+  if (!task && !loading) {
     return <Redirect to="/not-found" />;
   }
 
   return (
     <div className="container py-4">
-     
-      {loading && (
-        <div className="loader-container">
-          <div className="loader"></div>
-        </div>
-      )}
-
-      <div
-        className="card"
-        style={{ visibility: loading ? "hidden" : "visible" }}
-      >
+      <div className="card">
         <div className="card-body">
           <Link className="btn btn-primary" to="/tasks">
             <FontAwesomeIcon icon={faArrowLeft} className="me-2" />
@@ -95,75 +81,78 @@ const Task = () => {
           </Link>
           <hr />
 
-          <div className="row">
-            <div className="col-md-12">
-              
-              <div className="card mb-4">
-                <div className="card-body">
-                  <h2>Title: {task.title}</h2>
-                  <p>
-                    <strong>Description:</strong> {task.description}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+          {loading && <Loader />}
 
-          <div className="row">
-            <div className="col-md-6">
-              
-              <div className="card mb-4">
-                <div className="card-body">
-                  <h4>Assigned Users:</h4>
-                  {task.assignedTo && task.assignedTo.length > 0 ? (
-                    <ul className="list-group list-group-flush">
-                      {task.assignedTo.map((user) => (
-                        <li key={user._id} className="list-group-item">
-                          <p>
-                            <strong>Name:</strong> {user.name}
-                          </p>
-                          <p>
-                            <strong>Username:</strong> {user.username}
-                          </p>
-                          <p>
-                            <strong>Email:</strong> {user.email}
-                          </p>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p>No users assigned to this task.</p>
-                  )}
+          {!loading && (
+            <div className="row">
+              <div className="col-md-12">
+                <div className="card mb-4">
+                  <div className="card-body">
+                    <h2>Title: {task.title}</h2>
+                    <p>
+                      <strong>Description:</strong> {task.description}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
+          )}
 
-            <div className="col-md-6">
-              
-              <div className="card mb-4">
-                <div className="card-body">
-                  <h4>Associated Projects:</h4>
-                  {task.projects && task.projects.length > 0 ? (
-                    <ul className="list-group list-group-flush">
-                      {task.projects.map((project) => (
-                        <li key={project._id} className="list-group-item">
-                          <p>
-                            <strong>Project name:</strong> {project.name}
-                          </p>
-                          <p>
-                            <strong>Project description:</strong>{" "}
-                            {project.description}
-                          </p>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p>No projects associated with this task.</p>
-                  )}
+          {!loading && (
+            <div className="row">
+              <div className="col-md-6">
+                <div className="card mb-4">
+                  <div className="card-body">
+                    <h4>Assigned Users:</h4>
+                    {task.assignedTo && task.assignedTo.length > 0 ? (
+                      <ul className="list-group list-group-flush">
+                        {task.assignedTo.map((user) => (
+                          <li key={user._id} className="list-group-item">
+                            <p>
+                              <strong>Name:</strong> {user.name}
+                            </p>
+                            <p>
+                              <strong>Username:</strong> {user.username}
+                            </p>
+                            <p>
+                              <strong>Email:</strong> {user.email}
+                            </p>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p>No users assigned to this task.</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="col-md-6">
+                <div className="card mb-4">
+                  <div className="card-body">
+                    <h4>Associated Projects:</h4>
+                    {task.projects && task.projects.length > 0 ? (
+                      <ul className="list-group list-group-flush">
+                        {task.projects.map((project) => (
+                          <li key={project._id} className="list-group-item">
+                            <p>
+                              <strong>Project name:</strong> {project.name}
+                            </p>
+                            <p>
+                              <strong>Project description:</strong>{" "}
+                              {project.description}
+                            </p>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p>No projects associated with this task.</p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

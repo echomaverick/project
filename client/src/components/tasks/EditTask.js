@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useHistory, useParams, Link, Redirect } from "react-router-dom";
+import "../styles/edittask.css";
 
 const EditTask = () => {
   let history = useHistory();
@@ -22,6 +23,8 @@ const EditTask = () => {
     projects: "",
   });
   const [notFound, setNotFound] = useState(false);
+  const [isUserDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [isProjectDropdownOpen, setProjectDropdownOpen] = useState(false);
 
   const { title, description, assignedTo, projects: selectedProjects } = task;
 
@@ -54,8 +57,6 @@ const EditTask = () => {
       ...prevTask,
       [name]: newValue,
     }));
-
-    // Clear the corresponding error message when the user starts typing again
     setErrors((prevErrors) => ({
       ...prevErrors,
       [name]: "",
@@ -66,14 +67,8 @@ const EditTask = () => {
     return array.length > 0;
   };
 
-  const isString = (text) => {
-    return typeof text === "string";
-  };
-
-  // Helper function to check if a field is empty
   const isEmpty = (value) => value.trim() === "";
 
-  // Validate form fields and set error messages
   const isFormValid = () => {
     const errors = {
       title: isEmpty(title) ? "Task title is required." : "",
@@ -109,18 +104,16 @@ const EditTask = () => {
   };
 
   const loadTask = async () => {
-    // Check if the ID matches the expected format of a MongoDB ObjectID (12-byte hexadecimal)
     const objectIdRegex = /^[0-9a-fA-F]{24}$/;
 
     if (!objectIdRegex.test(id)) {
-      setNotFound(true); // Set notFound state to true when an invalid ID is detected
+      setNotFound(true);
       return;
     }
 
     try {
       const result = await axios.get(`http://localhost:5000/api/tasks/${id}`);
       if (!result.data) {
-        // If the result data is null (task not found), set notFound state to true
         setNotFound(true);
         return;
       }
@@ -135,7 +128,7 @@ const EditTask = () => {
       });
     } catch (error) {
       console.error("Error loading task:", error);
-      setNotFound(true); // Set notFound state to true in case of an error while fetching the task
+      setNotFound(true);
     }
   };
 
@@ -149,13 +142,45 @@ const EditTask = () => {
   };
 
   const isAnyRequiredFieldEmpty = () => {
-    return !title.trim() || !description.trim() || !isAtLeastOneSelected(assignedTo) || !isAtLeastOneSelected(selectedProjects);
+    return isEmpty(title) || isEmpty(description) || !isAtLeastOneSelected(assignedTo) || !isAtLeastOneSelected(selectedProjects);
   };
 
-  // If notFound state is true, redirect to "Not Found" page
   if (notFound) {
     return <Redirect to="/not-found" />;
   }
+
+  const handleUserDropdownToggle = () => {
+    setUserDropdownOpen(!isUserDropdownOpen);
+  };
+
+  const handleProjectDropdownToggle = () => {
+    setProjectDropdownOpen(!isProjectDropdownOpen);
+  };
+
+  const handleSelectAll = (event) => {
+    const { name, options } = event.target;
+    const allValues = Array.from(options).map((option) => option.value);
+    setTask((prevTask) => ({
+      ...prevTask,
+      [name]: allValues,
+    }));
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "",
+    }));
+  };
+  
+  const handleUnselectAll = (event) => {
+    const { name } = event.target;
+    setTask((prevTask) => ({
+      ...prevTask,
+      [name]: [],
+    }));
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "",
+    }));
+  };
 
   return (
     <div className="container">
@@ -195,41 +220,97 @@ const EditTask = () => {
             <label htmlFor="assignedTo" className="form-label">
               Assigned To:
             </label>
-            <select
-              multiple
-              className={`form-control ${errors.assignedTo ? "is-invalid" : ""}`}
-              id="assignedTo"
-              name="assignedTo"
-              value={assignedTo}
-              onChange={onInputChange}
-            >
-              {users.map((user) => (
-                <option key={user._id} value={user._id}>
-                  {user.name} {user.surname}
-                </option>
-              ))}
-            </select>
-            {errors.assignedTo && <div className="invalid-feedback">{errors.assignedTo}</div>}
+            <div className="custom-dropdown" style={{ marginBottom: "1rem" }}>
+              <button
+                type="button"
+                className="btn btn-secondary custom-dropdown-toggle"
+                onClick={handleUserDropdownToggle}
+                style={{ width: "100%" }}
+              >
+                {assignedTo.length === 0 ? "Select Users" : `Selected Users (${assignedTo.length})`}{" "}
+                <i className="bi bi-caret-down-fill"></i>
+              </button>
+              {isUserDropdownOpen && (
+                <div className="card custom-dropdown-content">
+                  <div className="card-body">
+                    <div className="d-flex justify-content-center mb-2">
+                      <button type="button" className="btn btn-primary btn-sm me-2" onClick={handleSelectAll}>
+                        Select All
+                      </button>
+                      <button type="button" className="btn btn-primary btn-sm" onClick={handleUnselectAll}>
+                        Unselect All
+                      </button>
+                    </div>
+                    <div className="custom-dropdown-user-list" style={{ maxHeight: "200px", overflowY: "auto" }}>
+                      {users.map((user) => (
+                        <div key={user._id} className="form-check">
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            value={user._id}
+                            checked={assignedTo.includes(user._id)}
+                            onChange={onInputChange}
+                            name="assignedTo"
+                          />
+                          <label className="form-check-label custom-dropdown-label">
+                            {user.name} {user.surname}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+            {errors.assignedTo && <div className="text-danger">{errors.assignedTo}</div>}
           </div>
           <div className="mb-3">
             <label htmlFor="projects" className="form-label">
               Projects:
             </label>
-            <select
-              multiple
-              className={`form-control ${errors.projects ? "is-invalid" : ""}`}
-              id="projects"
-              name="projects"
-              value={selectedProjects}
-              onChange={onInputChange}
-            >
-              {projects.map((project) => (
-                <option key={project._id} value={project._id}>
-                  {project.name}
-                </option>
-              ))}
-            </select>
-            {errors.projects && <div className="invalid-feedback">{errors.projects}</div>}
+            <div className="custom-dropdown" style={{ marginBottom: "1rem" }}>
+              <button
+                type="button"
+                className="btn btn-secondary custom-dropdown-toggle"
+                onClick={handleProjectDropdownToggle}
+                style={{ width: "100%" }}
+              >
+                {selectedProjects.length === 0 ? "Select Projects" : `Selected Projects (${selectedProjects.length})`}{" "}
+                <i className="bi bi-caret-down-fill"></i>
+              </button>
+              {isProjectDropdownOpen && (
+                <div className="card custom-dropdown-content">
+                  <div className="card-body">
+                    <div className="d-flex justify-content-center mb-2">
+                      <button type="button" className="btn btn-primary btn-sm me-2" onClick={handleSelectAll}>
+                        Select All
+                      </button>
+                      <button type="button" className="btn btn-primary btn-sm" onClick={handleUnselectAll}>
+                        Unselect All
+                      </button>
+                    </div>
+                    <div className="custom-dropdown-user-list" style={{ maxHeight: "200px", overflowY: "auto" }}>
+                      {projects.map((project) => (
+                        <div key={project._id} className="form-check">
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            value={project._id}
+                            checked={selectedProjects.includes(project._id)}
+                            onChange={onInputChange}
+                            name="projects"
+                          />
+                          <label className="form-check-label custom-dropdown-label">
+                            {project.name}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+            {errors.projects && <div className="text-danger">{errors.projects}</div>}
           </div>
           <div className="d-flex justify-content-start">
             <button className="btn btn-primary" type="submit" disabled={loading || isAnyRequiredFieldEmpty()}>

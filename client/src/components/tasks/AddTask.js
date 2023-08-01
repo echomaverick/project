@@ -3,13 +3,13 @@ import axios from "axios";
 import { useHistory } from "react-router-dom";
 
 const AddTask = () => {
-  let history = useHistory();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [availableUsers, setAvailableUsers] = useState([]);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [isDropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
     fetchAvailableData();
@@ -74,7 +74,9 @@ const AddTask = () => {
     }
   };
 
-  const isButtonDisabled = !title || !description || selectedUsers.length === 0;
+  const handleDropdownToggle = () => {
+    setDropdownOpen(!isDropdownOpen);
+  };
 
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
@@ -86,16 +88,32 @@ const AddTask = () => {
     clearError("description");
   };
 
-  const handleUsersChange = (e) => {
-    setSelectedUsers(
-      Array.from(e.target.selectedOptions, (option) => option.value)
+  const handleUserToggle = (user) => () => {
+    setSelectedUsers((prevSelectedUsers) =>
+      prevSelectedUsers.includes(user._id)
+        ? prevSelectedUsers.filter((id) => id !== user._id)
+        : [...prevSelectedUsers, user._id]
     );
+    clearError("users");
+  };
+
+  const handleSelectAll = () => {
+    setSelectedUsers(availableUsers.map((user) => user._id));
+    clearError("users");
+  };
+
+  const handleUnselectAll = () => {
+    setSelectedUsers([]);
     clearError("users");
   };
 
   const clearError = (fieldName) => {
     setErrors((prevErrors) => ({ ...prevErrors, [fieldName]: "" }));
   };
+
+  const isButtonDisabled = !title || !description || selectedUsers.length === 0;
+
+  const history = useHistory();
 
   return (
     <div className="container">
@@ -142,25 +160,64 @@ const AddTask = () => {
             <label htmlFor="users" className="form-label">
               Select Users:
             </label>
-            <select
-              multiple
-              className="form-control form-control-lg"
-              id="users"
-              value={selectedUsers}
-              onChange={handleUsersChange}
-              required
-            >
-              {availableUsers.map((user) => (
-                <option key={user._id} value={user._id}>
-                  {user.name} {user.surname}
-                </option>
-              ))}
-            </select>
+            <div className="custom-dropdown" style={{ marginBottom: "1rem" }}>
+              <button
+                type="button"
+                className="btn btn-secondary custom-dropdown-toggle"
+                onClick={handleDropdownToggle}
+                style={{ width: "100%" }}
+              >
+                {selectedUsers.length === 0
+                  ? "Select Users"
+                  : `Selected Users (${selectedUsers.length})`}{" "}
+                <i className="bi bi-caret-down-fill"></i>
+              </button>
+              {isDropdownOpen && (
+                <div className="card custom-dropdown-content">
+                  <div className="card-body">
+                    <div className="d-flex justify-content-center mb-2">
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm me-2"
+                        onClick={handleSelectAll}
+                      >
+                        Select All
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        onClick={handleUnselectAll}
+                      >
+                        Unselect All
+                      </button>
+                    </div>
+                    <div
+                      className="custom-dropdown-user-list"
+                      style={{ maxHeight: "150px", overflowY: "auto" }}
+                    >
+                      {availableUsers.map((user) => (
+                        <div key={user._id} className="form-check">
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            value={user._id}
+                            checked={selectedUsers.includes(user._id)}
+                            onChange={handleUserToggle(user)}
+                          />
+                          <label className="form-check-label custom-dropdown-label">
+                            {user.name} {user.surname}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
             {errors.users && (
               <div className="text-danger">{errors.users}</div>
             )}
           </div>
-
           <div className="d-flex justify-content-start">
             <button
               type="submit"
@@ -169,21 +226,11 @@ const AddTask = () => {
             >
               Add Task
             </button>
-            <button
-              type="button"
-              className="btn btn-primary btn-sm"
-              onClick={() => history.push("/tasks")}
-            >
+            <button className="btn btn-primary" onClick={() => history.push("/projects")}>
               Cancel
             </button>
           </div>
         </form>
-
-        {loading && (
-          <div className="loader-container">
-            <div className="loader"></div>
-          </div>
-        )}
       </div>
     </div>
   );

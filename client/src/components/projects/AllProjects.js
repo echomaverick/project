@@ -6,10 +6,12 @@ const ProjectCard = ({ project, onDelete }) => {
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   const handleDelete = () => {
+    console.log("Delete button clicked for project ID:", project._id);
     setShowConfirmation(true);
   };
 
   const confirmDelete = () => {
+    console.log("Confirm delete called with project ID:", project._id);
     onDelete(project._id);
     setShowConfirmation(false);
   };

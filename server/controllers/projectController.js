@@ -8,6 +8,7 @@ const User = require("../models/userModel");
 const createProject = async (req, res) => {
   try {
     const { name, description, users, tasks } = req.body;
+    console.log("Received project data:", { name, description, users, tasks });
 
     if (!name || !description || !users) {
       return res
@@ -224,6 +225,7 @@ const updateProject = async (req, res) => {
 const deleteProject = async (req, res) => {
   try {
     const { projectId } = req.params;
+    console.log("Received project ID for deletion:", projectId);
 
     const deletedProject = await Project.findByIdAndDelete(projectId);
 
