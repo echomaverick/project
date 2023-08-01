@@ -12,7 +12,7 @@ const EditUser = () => {
     email: "",
     role: "",
   });
-  const [loading, setLoading] = useState(false); // State to manage loading state
+  const [loading, setLoading] = useState(false); 
 
   const { name, surname, username, email, role } = user;
   const onInputChange = (e) => {
@@ -25,14 +25,14 @@ const EditUser = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Show loader when update starts
+    setLoading(true); 
 
     try {
       await axios.put(`http://localhost:5000/api/users/${id}`, user);
-      setLoading(false); // Hide loader when update is complete
+      setLoading(false); 
       history.push("/users");
     } catch (error) {
-      setLoading(false); // Hide loader in case of error
+      setLoading(false);
       console.error("Error updating user:", error);
     }
   };

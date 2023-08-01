@@ -72,7 +72,7 @@ const Home = () => {
     <div style={containerStyle}>
         <>
           <div style={overlayStyle}></div>
-          <h1 style={headerStyle}>Welcome to...</h1>
+          <h1 style={headerStyle}>Welcome to Proventus Nexus</h1>
           <p style={subheaderStyle}>Discover amazing things.</p>
           <div style={inputContainerStyle}>
           </div>

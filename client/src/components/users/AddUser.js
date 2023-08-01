@@ -8,7 +8,7 @@ const AddUser = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const [formSubmitting, setFormSubmitting] = useState(false); // State for form submission
+  const [formSubmitting, setFormSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
   const [existingEmails, setExistingEmails] = useState([]);
   const [existingUsernames, setExistingUsernames] = useState([]);
@@ -28,7 +28,6 @@ const AddUser = () => {
     fetchData();
   }, []);
 
-  // Function to check if all required fields are filled
   const areAllFieldsFilled = () => {
     return (
       name.trim() !== "" &&
@@ -41,19 +40,19 @@ const AddUser = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate name, surname, and username
-    const nameSurnameRegex = /^[A-Z][A-Za-z]{2,}$/;
-    const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
+    
 
     const newErrors = {};
+
+    const nameSurnameRegex = /^[A-Z][A-Za-z]{2,}$/;
     if (!nameSurnameRegex.test(name)) {
       newErrors.name = "Name should be at least 3 characters long and start with a capital letter and contain only alphabetic characters.";
     }
-
     if (!nameSurnameRegex.test(surname)) {
       newErrors.surname = "Surname should be at least 3 characters long and start with a capital letter and contain only alphabetic characters.";
     }
 
+    const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
     if (!emailRegex.test(email)) {
       newErrors.email = "Please enter a valid email address.";
     } else if (existingEmails.includes(email.toLowerCase())) {
@@ -83,7 +82,7 @@ const AddUser = () => {
 
       if (!adminRole) {
         setErrors({ adminRole: "The 'admin' role does not exist in the database." });
-        setFormSubmitting(false); // End form submission
+        setFormSubmitting(false); 
         return;
       }
 
@@ -96,7 +95,7 @@ const AddUser = () => {
         surname,
         username,
         email,
-        role: roleData, // Assign the role directly to the user data
+        role: roleData,
       };
 
       const response = await axios.post(
@@ -104,11 +103,11 @@ const AddUser = () => {
         userData
       );
       console.log("User added successfully:", response.data);
-      setFormSubmitting(false); // End form submission
-      history.push("/users"); // Redirect to all users page
+      setFormSubmitting(false);
+      history.push("/users");
 
     } catch (error) {
-      setFormSubmitting(false); // End form submission
+      setFormSubmitting(false); 
       console.error("Error adding user:", error);
     }
   };
@@ -157,7 +156,7 @@ const AddUser = () => {
                   value={name}
                   onChange={handleNameChange}
                 />
-                {errors.name && <div className="text-danger">{errors.name}</div>} {/* Show error message */}
+                {errors.name && <div className="text-danger">{errors.name}</div>} 
               </div>
               <div className="form-group mb-3">
                 <label htmlFor="surname" className="form-label">
@@ -171,7 +170,7 @@ const AddUser = () => {
                   value={surname}
                   onChange={handleSurnameChange}
                 />
-                {errors.surname && <div className="text-danger">{errors.surname}</div>} {/* Show error message */}
+                {errors.surname && <div className="text-danger">{errors.surname}</div>} 
               </div>
               <div className="form-group mb-3">
                 <label htmlFor="username" className="form-label">
@@ -185,7 +184,7 @@ const AddUser = () => {
                   value={username}
                   onChange={handleUsernameChange}
                 />
-                {errors.username && <div className="text-danger">{errors.username}</div>} {/* Show error message */}
+                {errors.username && <div className="text-danger">{errors.username}</div>}
               </div>
               <div className="form-group mb-3">
                 <label htmlFor="email" className="form-label">
@@ -199,19 +198,19 @@ const AddUser = () => {
                   value={email}
                   onChange={handleEmailChange}
                 />
-                {errors.email && <div className="text-danger">{errors.email}</div>} {/* Show error message */}
+                {errors.email && <div className="text-danger">{errors.email}</div>}
               </div>
               <div className="d-flex justify-content-start">
                 <button
                   type="submit"
-                  className="btn btn-primary me-2 btn-sm" // Added btn-sm class for smaller button
+                  className="btn btn-primary me-2 btn-sm"
                   disabled={!areAllFieldsFilled() || formSubmitting}
                 >
                   Add User
                 </button>
                 <button
                   type="button"
-                  className="btn btn-primary btn-sm" // Added btn-sm class for smaller button
+                  className="btn btn-primary btn-sm" 
                   onClick={() => history.push("/users")}
                 >
                   Cancel

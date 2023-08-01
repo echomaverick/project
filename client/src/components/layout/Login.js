@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import '../styles/login.css'; // Import the CSS file for custom styles
+import '../styles/login.css';
 
 function BasicExample() {
   const history = useHistory();

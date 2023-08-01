@@ -62,7 +62,7 @@ const TaskCard = ({ task, onDelete }) => {
 
 const AllTasks = () => {
   const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(true); // State to manage loading state
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     loadTasks();
@@ -72,10 +72,10 @@ const AllTasks = () => {
     try {
       const response = await axios.get("http://localhost:5000/api/tasks");
       setTasks(response.data);
-      setLoading(false); // Hide loader after tasks are loaded
+      setLoading(false); 
     } catch (error) {
       console.error("Error loading tasks:", error);
-      setLoading(false); // Hide loader in case of error
+      setLoading(false); 
     }
   };
 
@@ -90,7 +90,7 @@ const AllTasks = () => {
 
   return (
     <div className="container">
-      {loading ? ( // Display the loader if loading is true
+      {loading ? ( 
         <div className="loader-container">
           <div className="loader"></div>
         </div>

@@ -58,8 +58,8 @@ const ProjectCard = ({ project, onDelete }) => {
 
 const AllProjects = () => {
   const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true); // Set initial loading state to true
-  const [deleting, setDeleting] = useState(false); // Set initial deleting state to false
+  const [loading, setLoading] = useState(true); 
+  const [deleting, setDeleting] = useState(false); 
 
   useEffect(() => {
     loadProjects();
@@ -69,21 +69,21 @@ const AllProjects = () => {
     try {
       const response = await axios.get("http://localhost:5000/api/projects");
       setProjects(response.data);
-      setLoading(false); // Once data is fetched, set loading state to false
+      setLoading(false); 
     } catch (error) {
-      setLoading(false); // Set loading state to false even in case of an error
+      setLoading(false); 
       console.error("Error loading projects:", error);
     }
   };
 
   const deleteProject = async (id) => {
     try {
-      setDeleting(true); // Start the delete operation, show the loader
+      setDeleting(true); 
       await axios.delete(`http://localhost:5000/api/projects/${id}`);
-      setDeleting(false); // Finish the delete operation, hide the loader
-      loadProjects(); // Load the updated list of projects
+      setDeleting(false);
+      loadProjects(); 
     } catch (error) {
-      setDeleting(false); // Hide the loader in case of an error
+      setDeleting(false); 
       console.error("Error deleting project:", error);
     }
   };
@@ -99,7 +99,6 @@ const AllProjects = () => {
         </div>
         <div className="row">
           {loading ? (
-            // Show loader when data is being fetched
             <div className="loader-container">
               <div className="loader"></div>
             </div>
@@ -111,7 +110,7 @@ const AllProjects = () => {
             ))
           )}
         </div>
-        {deleting && ( // Show the loader when deleting is in progress
+        {deleting && ( 
           <div className="loader-container">
             <div className="loader"></div>
           </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useHistory, useParams, Link } from "react-router-dom";
+import { useHistory, useParams, Link, Redirect } from "react-router-dom";
 
 const EditTask = () => {
   let history = useHistory();
@@ -21,6 +21,7 @@ const EditTask = () => {
     assignedTo: "",
     projects: "",
   });
+  const [notFound, setNotFound] = useState(false);
 
   const { title, description, assignedTo, projects: selectedProjects } = task;
 
@@ -108,8 +109,22 @@ const EditTask = () => {
   };
 
   const loadTask = async () => {
+    // Check if the ID matches the expected format of a MongoDB ObjectID (12-byte hexadecimal)
+    const objectIdRegex = /^[0-9a-fA-F]{24}$/;
+
+    if (!objectIdRegex.test(id)) {
+      setNotFound(true); // Set notFound state to true when an invalid ID is detected
+      return;
+    }
+
     try {
       const result = await axios.get(`http://localhost:5000/api/tasks/${id}`);
+      if (!result.data) {
+        // If the result data is null (task not found), set notFound state to true
+        setNotFound(true);
+        return;
+      }
+
       const userIDs = result.data.assignedTo.map((user) => user._id.toString());
       const projectIDs = result.data.projects.map((project) => project._id.toString());
       setTask({
@@ -120,6 +135,7 @@ const EditTask = () => {
       });
     } catch (error) {
       console.error("Error loading task:", error);
+      setNotFound(true); // Set notFound state to true in case of an error while fetching the task
     }
   };
 
@@ -135,6 +151,11 @@ const EditTask = () => {
   const isAnyRequiredFieldEmpty = () => {
     return !title.trim() || !description.trim() || !isAtLeastOneSelected(assignedTo) || !isAtLeastOneSelected(selectedProjects);
   };
+
+  // If notFound state is true, redirect to "Not Found" page
+  if (notFound) {
+    return <Redirect to="/not-found" />;
+  }
 
   return (
     <div className="container">

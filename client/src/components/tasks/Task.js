@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, Redirect } from "react-router-dom";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import Loader from "../layout/Loader";
 
 const Task = () => {
-  const [loading, setLoading] = useState(true); // State to manage loading state
-  const [task, setTask] = useState({
-    title: "",
-    description: "",
-    assignedTo: [],
-    projects: [],
-  });
+  const [loading, setLoading] = useState(true);
+  const [task, setTask] = useState(null);
 
   const { id } = useParams();
 
@@ -20,6 +16,12 @@ const Task = () => {
   }, []);
 
   const loadTask = async () => {
+    const objectIdRegex = /^[0-9a-fA-F]{24}$/;
+    if (!objectIdRegex.test(id)) {
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await axios.get(`http://localhost:5000/api/tasks/${id}`);
       setTask(res.data);
@@ -58,16 +60,24 @@ const Task = () => {
         }));
       }
 
-      setLoading(false); // Hide the loader once data is loaded
+      setLoading(false); 
     } catch (error) {
       console.log("Error: ", error);
-      setLoading(false); // Hide the loader in case of error
+      setLoading(false); 
     }
   };
 
+  if (loading) {
+    return <Loader/>;
+  }
+
+  if (!task) {
+    return <Redirect to="/not-found" />;
+  }
+
   return (
     <div className="container py-4">
-      {/* Loader */}
+     
       {loading && (
         <div className="loader-container">
           <div className="loader"></div>
@@ -87,7 +97,7 @@ const Task = () => {
 
           <div className="row">
             <div className="col-md-12">
-              {/* Task Title and Description Card */}
+              
               <div className="card mb-4">
                 <div className="card-body">
                   <h2>Title: {task.title}</h2>
@@ -101,12 +111,12 @@ const Task = () => {
 
           <div className="row">
             <div className="col-md-6">
-              {/* Assigned Users Card */}
+              
               <div className="card mb-4">
                 <div className="card-body">
                   <h4>Assigned Users:</h4>
                   {task.assignedTo && task.assignedTo.length > 0 ? (
-                    <ul className="list-group list-group-flush"> {/* Add list-group-flush class to remove the square bullets */}
+                    <ul className="list-group list-group-flush">
                       {task.assignedTo.map((user) => (
                         <li key={user._id} className="list-group-item">
                           <p>
@@ -129,12 +139,12 @@ const Task = () => {
             </div>
 
             <div className="col-md-6">
-              {/* Associated Projects Card */}
+              
               <div className="card mb-4">
                 <div className="card-body">
                   <h4>Associated Projects:</h4>
                   {task.projects && task.projects.length > 0 ? (
-                    <ul className="list-group list-group-flush"> {/* Add list-group-flush class to remove the square bullets */}
+                    <ul className="list-group list-group-flush">
                       {task.projects.map((project) => (
                         <li key={project._id} className="list-group-item">
                           <p>

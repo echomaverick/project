@@ -62,17 +62,12 @@ const UserCard = ({ user, onDelete }) => {
     {showConfirmation && <div className="popup-shadow"></div>}
   </div>
 </div>
-
-
-
-
-
   );
 };
 
 const AllUsers = () => {
   const [users, setUsers] = useState([]);
-  const [deletingUser, setDeletingUser] = useState(""); // State to track which user is currently being deleted
+  const [deletingUser, setDeletingUser] = useState(""); 
 
   useEffect(() => {
     loadUsers();
@@ -89,13 +84,13 @@ const AllUsers = () => {
 
   const deleteUser = async (id) => {
     try {
-      setDeletingUser(id); // Set the ID of the user that is being deleted
+      setDeletingUser(id); 
       await axios.delete(`http://localhost:5000/api/users/${id}`);
       loadUsers();
     } catch (error) {
       console.error("Error deleting user:", error);
     } finally {
-      setDeletingUser(""); // Reset the deletingUser state when the deletion is complete
+      setDeletingUser("");
     }
   };
 

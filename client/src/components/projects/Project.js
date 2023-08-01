@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect, useParams } from "react-router-dom";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-
 const Projects = () => {
   const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true); // Set initial loading state to true
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadProjects();
@@ -16,12 +15,18 @@ const Projects = () => {
     try {
       const res = await axios.get("http://localhost:5000/api/projects");
       setProjects(res.data);
-      setLoading(false); // Once data is fetched, set loading state to false
+      setLoading(false);
     } catch (error) {
-      setLoading(false); // Set loading state to false even in case of an error
+      setLoading(false);
       console.error("Error fetching projects:", error);
     }
   };
+
+  const objectIdRegex = /^[0-9a-fA-F]{24}$/;
+  const { id } = useParams();
+  if (id && !objectIdRegex.test(id)) {
+    return <Redirect to="/not-found" />;
+  }
 
   return (
     <div className="container py-4">
@@ -34,7 +39,7 @@ const Projects = () => {
           <hr />
           <h2 className="border-bottom pb-3">Projects</h2>
           {loading ? (
-            // Show loader when data is being fetched
+            
             <div className="loader-container">
               <div className="loader"></div>
             </div>

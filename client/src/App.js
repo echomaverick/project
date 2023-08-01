@@ -7,7 +7,8 @@ import {
   BrowserRouter as Router,
   Route,
   Switch,
-  withRouter
+  withRouter,
+  Redirect,
 } from "react-router-dom";
 import EditUser from "./components/users/EditUser";
 import User from "./components/users/User";
@@ -19,11 +20,10 @@ import AllProjects from "./components/projects/AllProjects";
 import EditProject from "./components/projects/EditProject";
 import AddProject from "./components/projects/AddProject";
 import AddUser from "./components/users/AddUser";
-import Loader from '../src/components/layout/Loader';
+import Loader from "../src/components/layout/Loader";
 import NavigationBar from "./components/layout/NavigationBar";
 import Login from "./components/layout/Login";
-import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
-
+import NotFound from "../src/components/layout/NotFound";
 function App(props) {
   const [isLoading, setIsLoading] = useState(true);
 
@@ -73,10 +73,11 @@ function App(props) {
               <Route exact path="/users/edit/:id" component={EditUser} />
               <Route exact path="/users/:id" component={User} />
 
-              {/*Login */}
-              <Route exact path="/login" component={Login}/>
+              {/*login */}
+              <Route exact path="/login" component={Login} />
 
-              <Redirect to="/"/>
+              <Route component={NotFound} />
+              <Redirect to="/" />
             </Switch>
           )}
         </div>

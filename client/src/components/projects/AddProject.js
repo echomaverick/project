@@ -21,11 +21,11 @@ const AddProject = () => {
   const fetchAvailableData = async () => {
     try {
       const usersResponse = await axios.get("http://localhost:5000/api/users");
-      const users = usersResponse.data.map((user) => user._id); // Assuming the User model has "_id" field as MongoDB ObjectId
+      const users = usersResponse.data.map((user) => user._id);
       setAvailableUsers(users);
 
       const tasksResponse = await axios.get("http://localhost:5000/api/tasks");
-      const tasks = tasksResponse.data.map((task) => task._id); // Assuming the Task model has "_id" field as MongoDB ObjectId
+      const tasks = tasksResponse.data.map((task) => task._id); 
       setAvailableTasks(tasks);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -35,35 +35,31 @@ const AddProject = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate project name and description
-    const projectNameRegex = /^[A-Za-z\s]+$/; // Regex to allow only letters and spaces
-    const descriptionRegex = /^[A-Za-z\s]+$/; // Regex to allow only letters and spaces
-
     const newErrors = {};
 
+    const projectNameRegex = /^[A-Za-z\s]+$/; 
     if (!projectNameRegex.test(name)) {
       newErrors.name = "Project name should only contain letters and spaces.";
     } else if (name.trim() !== "" && name[0] !== name[0].toUpperCase()) {
       newErrors.name = "Project name should start with an uppercase letter.";
     }
 
+    const descriptionRegex = /^[A-Za-z\s]+$/;
     if (!descriptionRegex.test(description)) {
       newErrors.description = "Description should only contain letters and spaces.";
     } else if (description.trim() !== "" && description[0] !== description[0].toUpperCase()) {
       newErrors.description = "Description should start with an uppercase letter.";
     }
 
-    // Check if at least one user and one task are selected
+
     if (selectedUsers.length === 0 || selectedTasks.length === 0) {
       newErrors.users = "Please select at least one user and one task.";
     }
 
     setErrors(newErrors);
-
     if (Object.keys(newErrors).length > 0) {
       return;
     }
-
     setLoading(true);
     setErrors({});
 
@@ -78,9 +74,7 @@ const AddProject = () => {
       const response = await axios.post("http://localhost:5000/api/projects", projectData);
       console.log("Project added successfully:", response.data.project);
       setLoading(false);
-      // Redirect to the projects page after adding the project
-      // Replace this with the correct route of your projects page if needed
-      // history.push("/projects");
+      history.push("/projects");
     } catch (error) {
       setLoading(false);
       console.error("Error adding project:", error);
@@ -98,7 +92,7 @@ const AddProject = () => {
   };
 
   const handleUsersChange = (value) => {
-    const { users, tasks } = value; // Extract selected users and tasks from the value object
+    const { users, tasks } = value; 
     setSelectedUsers(users);
     setSelectedTasks(tasks);
     clearError("users");
