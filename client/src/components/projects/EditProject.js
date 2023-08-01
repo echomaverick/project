@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useHistory, useParams } from "react-router-dom";
-import "../styles/loader.css"; // Import the loader CSS file
+import MultipleSelectChip from '../projects/MultipleSelector'; // Make sure to provide the correct path to MultipleSelectChip
 
 const EditProject = () => {
   let history = useHistory();
@@ -72,7 +72,7 @@ const EditProject = () => {
   const loadAllUsers = async () => {
     try {
       const result = await axios.get("http://localhost:5000/api/users");
-      setAllUsers(result.data);
+      setAllUsers(result.data.map((user) => user.username));
     } catch (error) {
       console.error("Error loading users:", error);
     }
@@ -81,7 +81,7 @@ const EditProject = () => {
   const loadAllTasks = async () => {
     try {
       const result = await axios.get("http://localhost:5000/api/tasks");
-      setAllTasks(result.data);
+      setAllTasks(result.data.map((task) => task.title));
     } catch (error) {
       console.error("Error loading tasks:", error);
     }
@@ -129,39 +129,12 @@ const EditProject = () => {
           </div>
           <div className="mb-3">
             <label htmlFor="users" className="form-label">Select Users:</label>
-            <select
-              multiple
-              className="form-control"
-              id="users"
-              name="users"
-              value={users}
-              onChange={onInputChange}
-              required
-            >
-              {allUsers.map((user) => (
-                <option key={user._id} value={user._id}>
-                  {user.name} {user.surname}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="mb-3">
-            <label htmlFor="tasks" className="form-label">Select Tasks:</label>
-            <select
-              multiple
-              className="form-control"
-              id="tasks"
-              name="tasks"
-              value={tasks}
-              onChange={onInputChange}
-              required
-            >
-              {allTasks.map((task) => (
-                <option key={task._id} value={task._id}>
-                  {task.title}
-                </option>
-              ))}
-            </select>
+            <MultipleSelectChip
+              value={{ users, tasks }}
+              onChange={(value) => setProject({ ...project, ...value })}
+              availableUsers={allUsers}
+              availableTasks={allTasks}
+            />
           </div>
           <div className="d-flex justify-content-start gap-3">
             <button className="btn btn-primary" type="submit" disabled={!isString(name) || !isString(description) || !isAtLeastOneSelected(users) || !isAtLeastOneSelected(tasks)}>

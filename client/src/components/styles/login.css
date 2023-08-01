@@ -1,0 +1,19 @@
+/* Login.css */
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #4587ec;
+  }
+  
+  .login-card {
+    padding: 30px; /* Increase padding to add more space inside the card */
+    max-width: 500px; /* Increase max-width to make the card wider */
+    width: 80%; /* Adjust width if needed, e.g., 80% of the parent container */
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+  }
+  

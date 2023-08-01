@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useHistory, useParams, Link } from "react-router-dom";
-import "../styles/loader.css"; // Import the loader CSS file
 
 const EditTask = () => {
   let history = useHistory();

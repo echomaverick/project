@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./index.css";
-import '../src/components/styles/Navbar.css'
 import Home from "./components/pages/Home";
 import AllUsers from "./components/users/AllUsers";
 import AllTasks from "./components/tasks/AllTasks";
@@ -20,37 +19,67 @@ import AllProjects from "./components/projects/AllProjects";
 import EditProject from "./components/projects/EditProject";
 import AddProject from "./components/projects/AddProject";
 import AddUser from "./components/users/AddUser";
-import Navbar from "./components/layout/Navbar";
+import Loader from '../src/components/layout/Loader';
+import NavigationBar from "./components/layout/NavigationBar";
+import Login from "./components/layout/Login";
+import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
 
 function App(props) {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+  }, []);
+
   return (
     <Router>
       <div className="App">
-        <Navbar/>
-        <Switch>
-          <Route exact path="/" component={Home} />
-          /* task routes */
-          <Route exact path="/tasks/:id" component={Task}/>
-          <Route exact path="/tasks" component={AllTasks} />
-          <Route exact path="/task/add" component={AddTask} /> 
-          <Route exact path="/tasks/edit/:id" component={EditTask} />
+        <NavigationBar />
+        <div>
+          {isLoading && (
+            <div
+              style={{
+                position: "fixed",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                zIndex: 9999,
+              }}
+            >
+              <Loader />
+            </div>
+          )}
+          {!isLoading && (
+            <Switch>
+              <Route exact path="/" component={Home} />
+              {/* task routes */}
+              <Route exact path="/tasks/:id" component={Task} />
+              <Route exact path="/tasks" component={AllTasks} />
+              <Route exact path="/task/add" component={AddTask} />
+              <Route exact path="/tasks/edit/:id" component={EditTask} />
 
+              {/* project routes*/}
+              <Route exact path="/projects/:id" component={Projects} />
+              <Route exact path="/projects" component={AllProjects} />
+              <Route exact path="/projects/edit/:id" component={EditProject} />
+              <Route exact path="/project/add" component={AddProject} />
 
-          /* project routes*/
-          <Route exact path="/projects/:id" component={Projects}/>
-          <Route exact path="/projects" component={AllProjects}/>
-          <Route exact path="/projects/edit/:id" component={EditProject}/>
-          <Route exact path="/project/add" component={AddProject}/>
+              {/*user routes */}
+              <Route exact path="/profile" component={User} />
+              <Route exact path="/users" component={AllUsers} />
+              <Route exact path="/user/add" component={AddUser} />
+              <Route exact path="/users/edit/:id" component={EditUser} />
+              <Route exact path="/users/:id" component={User} />
 
+              {/*Login */}
+              <Route exact path="/login" component={Login}/>
 
-
-          /*user routes */
-          <Route exact path="/profile" component={User} />
-          <Route exact path="/users" component={AllUsers} />
-          <Route exact path="/user/add" component={AddUser} />
-          <Route exact path="/users/edit/:id" component={EditUser} />
-          <Route exact path="/users/:id" component={User} />
-        </Switch>
+              <Redirect to="/"/>
+            </Switch>
+          )}
+        </div>
       </div>
     </Router>
   );

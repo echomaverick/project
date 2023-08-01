@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import ReactLoading from "react-loading";
 
 const Home = () => {
+
   const containerStyle = {
-    position: "relative", 
-    minHeight: "100vh",
+    position: "fixed",
+    width: "100%",
+    minHeight: "100%",
     fontFamily: "Poppins, sans-serif",
     display: "flex",
     flexDirection: "column",
@@ -12,6 +15,8 @@ const Home = () => {
     justifyContent: "center",
     color: "#fff",
     padding: "20px",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
   };
 
   const overlayStyle = {
@@ -21,8 +26,8 @@ const Home = () => {
     left: 0,
     width: "100%",
     height: "100%",
-    background: "rgba(0, 0, 0, 0.4)",
-    backdropFilter: "blur(20px)", 
+    background: "rgba(0, 0, 0, 1)",
+    backdropFilter: "blur(20px)",
     zIndex: -999,
   };
 
@@ -54,7 +59,7 @@ const Home = () => {
 
   const buttonStyle = {
     padding: "15px 30px",
-    borderRadius: "0 5px 5px 0",
+    borderRadius: "10px",
     backgroundColor: "#0078d4",
     color: "#fff",
     textDecoration: "none",
@@ -64,7 +69,15 @@ const Home = () => {
   };
 
   return (
-    <div></div>
+    <div style={containerStyle}>
+        <>
+          <div style={overlayStyle}></div>
+          <h1 style={headerStyle}>Welcome to...</h1>
+          <p style={subheaderStyle}>Discover amazing things.</p>
+          <div style={inputContainerStyle}>
+          </div>
+        </>
+    </div>
   );
 };
 

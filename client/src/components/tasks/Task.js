@@ -3,7 +3,6 @@ import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import "../styles/loader.css"; // Import the loader CSS file
 
 const Task = () => {
   const [loading, setLoading] = useState(true); // State to manage loading state
@@ -87,19 +86,27 @@ const Task = () => {
           <hr />
 
           <div className="row">
-            <div className="col-md-6">
-              <h2>Title: {task.title}</h2>
-              <p>
-                <strong>Description:</strong> {task.description}
-              </p>
+            <div className="col-md-12">
+              {/* Task Title and Description Card */}
+              <div className="card mb-4">
+                <div className="card-body">
+                  <h2>Title: {task.title}</h2>
+                  <p>
+                    <strong>Description:</strong> {task.description}
+                  </p>
+                </div>
+              </div>
             </div>
+          </div>
 
+          <div className="row">
             <div className="col-md-6">
+              {/* Assigned Users Card */}
               <div className="card mb-4">
                 <div className="card-body">
                   <h4>Assigned Users:</h4>
                   {task.assignedTo && task.assignedTo.length > 0 ? (
-                    <ul className="list-group">
+                    <ul className="list-group list-group-flush"> {/* Add list-group-flush class to remove the square bullets */}
                       {task.assignedTo.map((user) => (
                         <li key={user._id} className="list-group-item">
                           <p>
@@ -119,12 +126,15 @@ const Task = () => {
                   )}
                 </div>
               </div>
+            </div>
 
+            <div className="col-md-6">
+              {/* Associated Projects Card */}
               <div className="card mb-4">
                 <div className="card-body">
                   <h4>Associated Projects:</h4>
                   {task.projects && task.projects.length > 0 ? (
-                    <ul className="list-group">
+                    <ul className="list-group list-group-flush"> {/* Add list-group-flush class to remove the square bullets */}
                       {task.projects.map((project) => (
                         <li key={project._id} className="list-group-item">
                           <p>

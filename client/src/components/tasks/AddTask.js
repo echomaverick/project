@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
-import "../styles/loader.css"; // Import the loader CSS file
 
 const AddTask = () => {
   let history = useHistory();
@@ -9,8 +8,8 @@ const AddTask = () => {
   const [description, setDescription] = useState("");
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [availableUsers, setAvailableUsers] = useState([]);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false); // Set initial loading state to false
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchAvailableData();
@@ -29,23 +28,34 @@ const AddTask = () => {
     e.preventDefault();
 
     const taskNameRegex = /^[A-Za-z\s]+$/;
+    const taskDescriptionRegex = /^[A-Za-z\s]+$/;
+
+    const newErrors = {};
+
     if (!taskNameRegex.test(title)) {
-      setError("Task title should only contain letters and spaces.");
-      return;
+      newErrors.title =
+        "Task title should only contain letters and spaces.";
+    } else if (title.trim() !== "" && title[0] !== title[0].toUpperCase()) {
+      newErrors.title = "Task title should start with an uppercase letter.";
     }
 
-    const taskDescriptionRegex = /^[A-Za-z\s]+$/;
     if (!taskDescriptionRegex.test(description)) {
-      setError("Task description should only contain letters and spaces.");
-      return;
+      newErrors.description =
+        "Task description should only contain letters and spaces.";
+    } else if (description.trim() !== "" && description[0] !== description[0].toUpperCase()) {
+      newErrors.description = "Task description should start with an uppercase letter.";
     }
 
     if (selectedUsers.length === 0) {
-      setError("Please select at least one user.");
+      newErrors.users = "Please select at least one user.";
+    }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
       return;
     }
 
-    setError("");
     setLoading(true);
 
     const taskData = {
@@ -56,43 +66,77 @@ const AddTask = () => {
 
     try {
       await axios.post("http://localhost:5000/api/tasks", taskData);
-      setLoading(false); // Set loading to false on success
+      setLoading(false);
       history.push("/tasks");
     } catch (error) {
-      setLoading(false); // Set loading to false on error
+      setLoading(false);
       console.error("Error adding task:", error);
     }
   };
 
   const isButtonDisabled = !title || !description || selectedUsers.length === 0;
 
+  const handleTitleChange = (e) => {
+    setTitle(e.target.value);
+    clearError("title");
+  };
+
+  const handleDescriptionChange = (e) => {
+    setDescription(e.target.value);
+    clearError("description");
+  };
+
+  const handleUsersChange = (e) => {
+    setSelectedUsers(
+      Array.from(e.target.selectedOptions, (option) => option.value)
+    );
+    clearError("users");
+  };
+
+  const clearError = (fieldName) => {
+    setErrors((prevErrors) => ({ ...prevErrors, [fieldName]: "" }));
+  };
+
   return (
     <div className="container">
       <div className="w-75 mx-auto shadow p-5 rounded">
         <h2 className="text-center mb-4">Add Task</h2>
-        {error && <div className="alert alert-danger">{error}</div>}
         <form onSubmit={handleSubmit}>
           <div className="form-group mb-3">
+            <label htmlFor="name" className="form-label">
+              Task Title:
+            </label>
             <input
               type="text"
               id="name"
               className="form-control form-control-lg"
               placeholder="Enter Task Title"
+              style={{ fontSize: "14px" }}
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={handleTitleChange}
               required
             />
+            {errors.title && (
+              <div className="text-danger">{errors.title}</div>
+            )}
           </div>
           <div className="form-group mb-3">
+            <label htmlFor="description" className="form-label">
+              Task Description:
+            </label>
             <input
               type="text"
               id="description"
               className="form-control form-control-lg"
               placeholder="Enter Task Description"
+              style={{ fontSize: "14px" }}
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={handleDescriptionChange}
               required
             />
+            {errors.description && (
+              <div className="text-danger">{errors.description}</div>
+            )}
           </div>
           <div className="form-group mb-3">
             <label htmlFor="users" className="form-label">
@@ -103,9 +147,7 @@ const AddTask = () => {
               className="form-control form-control-lg"
               id="users"
               value={selectedUsers}
-              onChange={(e) =>
-                setSelectedUsers(Array.from(e.target.selectedOptions, (option) => option.value))
-              }
+              onChange={handleUsersChange}
               required
             >
               {availableUsers.map((user) => (
@@ -114,19 +156,29 @@ const AddTask = () => {
                 </option>
               ))}
             </select>
+            {errors.users && (
+              <div className="text-danger">{errors.users}</div>
+            )}
           </div>
 
-          <div className="d-flex justify-content-between">
-            <button type="button" className="btn btn-primary" onClick={() => history.push("/tasks")}>
-              Cancel
-            </button>
-            <button type="submit" className="btn btn-primary" disabled={isButtonDisabled || loading}>
+          <div className="d-flex justify-content-start">
+            <button
+              type="submit"
+              className="btn btn-primary btn-sm"
+              disabled={isButtonDisabled || loading}
+            >
               Add Task
+            </button>
+            <button
+              type="button"
+              className="btn btn-primary btn-sm"
+              onClick={() => history.push("/tasks")}
+            >
+              Cancel
             </button>
           </div>
         </form>
 
-        {/* Loader */}
         {loading && (
           <div className="loader-container">
             <div className="loader"></div>

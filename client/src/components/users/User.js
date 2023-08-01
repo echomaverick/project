@@ -3,7 +3,6 @@ import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import "../styles/loader.css"; // Import the loader CSS file
 
 const User = () => {
   const [user, setUser] = useState({
@@ -62,10 +61,15 @@ const User = () => {
           </Link>
           <hr />
 
-          <div className="row">
-            <div className="col-md-6">
+          {/* User Information Card */}
+          <div className="card mb-4">
+            <div className="card-body">
+              <h4>User Information:</h4>
               <p>
                 <strong>Name:</strong> {user.name}
+              </p>
+              <p>
+                <strong>Surname:</strong> {user.surname}
               </p>
               <p>
                 <strong>Username:</strong> {user.username}
@@ -74,13 +78,16 @@ const User = () => {
                 <strong>Email:</strong> {user.email}
               </p>
             </div>
+          </div>
 
+          <div className="row">
             <div className="col-md-6">
+              {/* Tasks Assigned Card */}
               <div className="card mb-4">
                 <div className="card-body">
                   <h4>Tasks Assigned:</h4>
                   {user.tasks.length > 0 ? (
-                    <ul className="list-group">
+                    <ul className="list-group list-group-flush"> {/* Add list-group-flush class to remove the square bullets */}
                       {user.tasks.map((task) => (
                         <li key={task["$oid"]} className="list-group-item">
                           <p>
@@ -97,12 +104,15 @@ const User = () => {
                   )}
                 </div>
               </div>
+            </div>
 
+            <div className="col-md-6">
+              {/* Projects Assigned Card */}
               <div className="card mb-4">
                 <div className="card-body">
                   <h4>Projects Assigned:</h4>
                   {user.projects.length > 0 ? (
-                    <ul className="list-group">
+                    <ul className="list-group list-group-flush">
                       {user.projects.map((project) => (
                         <li key={project["$oid"]} className="list-group-item">
                           <p>

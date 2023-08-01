@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useHistory, useParams } from "react-router-dom";
-import "../styles/loader.css"; // Import the loader CSS file
 
 const EditUser = () => {
   let history = useHistory();
@@ -94,12 +93,13 @@ const EditUser = () => {
             />
           </div>
           <div className="form-group mb-3">
-            <label>Role:</label>
+            <label hidden>Role:</label>
             <input
               type="text"
               className="form-control form-control-lg"
               value={role}
               disabled
+              hidden
             />
           </div>
           <div className="d-flex justify-content-start">
