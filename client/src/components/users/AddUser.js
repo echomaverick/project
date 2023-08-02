@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
+import '../styles/popup.css';
 
 const AddUser = () => {
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
   const [existingEmails, setExistingEmails] = useState([]);
   const [existingUsernames, setExistingUsernames] = useState([]);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const history = useHistory();
 
   useEffect(() => {
@@ -39,8 +40,6 @@ const AddUser = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    
 
     const newErrors = {};
 
@@ -82,7 +81,7 @@ const AddUser = () => {
 
       if (!adminRole) {
         setErrors({ adminRole: "The 'admin' role does not exist in the database." });
-        setFormSubmitting(false); 
+        setFormSubmitting(false);
         return;
       }
 
@@ -104,6 +103,8 @@ const AddUser = () => {
       );
       console.log("User added successfully:", response.data);
       setFormSubmitting(false);
+      setShowSuccessModal(true); 
+
       history.push("/users");
 
     } catch (error) {
@@ -134,6 +135,10 @@ const AddUser = () => {
 
   const clearError = (fieldName) => {
     setErrors((prevErrors) => ({ ...prevErrors, [fieldName]: "" }));
+  };
+
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
   };
 
   return (
@@ -220,6 +225,15 @@ const AddUser = () => {
           </div>
         </div>
       </div>
+      {showSuccessModal && (
+        <div className="popup">
+          <div className="popup-shadow">
+            <h3>User Created</h3>
+            <p>User created successfully!</p>
+            <button onClick={handleCloseSuccessModal}>Close</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

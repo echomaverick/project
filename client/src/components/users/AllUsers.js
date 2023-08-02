@@ -34,7 +34,7 @@ const UserCard = ({ user, onDelete }) => {
         {showConfirmation ? (
           <div
             className="popup bg-white rounded p-3 d-flex flex-column align-items-center justify-content-center"
-            style={{ width: "600px", minHeight: "400px" }}
+            style={{ width: "600px", minHeight: "200px" }}
           >
             <p className="confirmation-text" style={{ fontSize: "24px" }}>
               Are you sure you want to delete?
@@ -70,15 +70,26 @@ const UserCard = ({ user, onDelete }) => {
 
 const AllUsers = () => {
   const [users, setUsers] = useState([]);
-  const [deletingUser, setDeletingUser] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(6);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {
     loadUsers();
   }, [currentPage]);
+
+  useEffect(() => {
+    if (searchTerm) {
+      setSearchResults(
+        users.filter((user) => user.username.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
+    } else {
+      setSearchResults([]);
+    }
+  }, [searchTerm, users]);
 
   const loadUsers = async () => {
     try {
@@ -97,21 +108,35 @@ const AllUsers = () => {
 
   const deleteUser = async (id) => {
     try {
-      setDeletingUser(id);
+      setLoading(true);
+      setError(null);
+
       await axios.delete(`http://localhost:5000/api/users/${id}`);
-      loadUsers();
+      setUsers((prevUsers) => prevUsers.filter((user) => user._id !== id));
     } catch (error) {
       console.error("Error deleting user:", error);
+      setError("Error deleting user. Please try again later.");
     } finally {
-      setDeletingUser("");
+      setLoading(false);
     }
   };
 
   const indexOfLastUser = currentPage * itemsPerPage;
   const indexOfFirstUser = indexOfLastUser - itemsPerPage;
-  const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+  const currentUsers = searchTerm
+    ? searchResults.slice(indexOfFirstUser, indexOfLastUser)
+    : users.slice(indexOfFirstUser, indexOfLastUser);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1); // Reset the current page to 1 when a new search term is entered
+  };
+
+  const handleSearchClear = () => {
+    setSearchTerm("");
+  };
 
   if (loading) {
     return (
@@ -151,43 +176,44 @@ const AllUsers = () => {
     );
   }
 
-  if (currentUsers.length === 0) {
-    return (
-      <div className="container mt-4">
-        <div className="py-4">
-          <div className="d-flex justify-content-between align-items-center">
-            <h1 className="display-4">All Users</h1>
-            <Link to="/user/add" className="btn btn-primary btn-rounded">
-              Add a User
-            </Link>
-          </div>
-          <div className="alert alert-info" role="alert">
-            No users found.
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="container mt-4">
       <div className="py-4">
         <div className="d-flex justify-content-between align-items-center">
           <h1 className="display-4">All Users</h1>
+          <div className="search-bar">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              placeholder="Search users..."
+            />
+            {searchTerm && (
+              <button className="clear-btn" onClick={handleSearchClear}>
+                Clear
+              </button>
+            )}
+          </div>
           <Link to="/user/add" className="btn btn-primary btn-rounded">
             Add a User
           </Link>
         </div>
         <div className="row mt-4">
-          {currentUsers.map((user) => (
-            <div className="col-md-6 col-lg-4 mb-4" key={user._id}>
-              <UserCard user={user} onDelete={deleteUser} />
+          {currentUsers.length === 0 ? (
+            <div className="col-md-12 text-center">
+              {searchTerm ? <h3>No users found</h3> : null}
             </div>
-          ))}
+          ) : (
+            currentUsers.map((user) => (
+              <div className="col-md-6 col-lg-4 mb-4" key={user._id}>
+                <UserCard user={user} onDelete={deleteUser} />
+              </div>
+            ))
+          )}
         </div>
         <Pagination
           itemsPerPage={itemsPerPage}
-          totalItems={users.length}
+          totalItems={searchTerm ? searchResults.length : users.length}
           currentPage={currentPage}
           paginate={paginate}
         />
@@ -195,6 +221,5 @@ const AllUsers = () => {
     </div>
   );
 };
-
 
 export default AllUsers;
