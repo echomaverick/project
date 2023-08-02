@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import "../styles/alltasks.css";
+import SkeletonUserCard from "../users/SkeletonUserCard";
+import Pagination from "./Pagination";
 
 const TaskCard = ({ task, onDelete }) => {
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -23,12 +25,10 @@ const TaskCard = ({ task, onDelete }) => {
     <div className="card shadow-sm">
       <div className="card-body">
         <div className="task-title">
-          <label>Task Title:</label>
-          <h5 className="card-title">{task.title}</h5>
+          <h5 className="card-title"><strong>Title:</strong> {task.title}</h5>
         </div>
         <div className="task-description">
-          <label>Description:</label>
-          <p className="card-text">{task.description}</p>
+          <p className="card-text"><strong>Description:</strong> {task.description}</p>
         </div>
       </div>
       <div className="card-footer d-flex justify-content-between rounded-bottom">
@@ -63,16 +63,20 @@ const TaskCard = ({ task, onDelete }) => {
   );
 };
 
+
 const AllTasks = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6; 
 
   useEffect(() => {
     loadTasks();
-  }, []);
+  }, [currentPage]); 
 
   const loadTasks = async () => {
     try {
+      setLoading(true); 
       const response = await axios.get("http://localhost:5000/api/tasks");
       setTasks(response.data);
       setLoading(false);
@@ -91,6 +95,19 @@ const AllTasks = () => {
     }
   };
 
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentTasks = tasks.slice(indexOfFirstItem, indexOfLastItem);
+
+
+  const paginate = (pageNumber) => {
+    setLoading(true);
+    setTimeout(() => {
+      setCurrentPage(pageNumber);
+      setLoading(false);
+    }, 900);
+  };
+
   return (
     <div className="container">
       <div className={`py-4`}>
@@ -102,18 +119,45 @@ const AllTasks = () => {
         </div>
         <div className="row">
           {loading ? (
-            <p>Loading tasks...</p>
+            <>
+              <div className="col-md-6 col-lg-4 mb-4">
+                <SkeletonUserCard />
+              </div>
+              <div className="col-md-6 col-lg-4 mb-4">
+                <SkeletonUserCard />
+              </div>
+              <div className="col-md-6 col-lg-4 mb-4">
+                <SkeletonUserCard />
+              </div>
+              <div className="col-md-6 col-lg-4 mb-4">
+                <SkeletonUserCard />
+              </div>
+              <div className="col-md-6 col-lg-4 mb-4">
+                <SkeletonUserCard />
+              </div>
+              <div className="col-md-6 col-lg-4 mb-4">
+                <SkeletonUserCard />
+              </div>
+            </>
           ) : (
-            tasks.map((task) => (
+            currentTasks.map((task) => (
               <div className="col-md-6 col-lg-4 mb-4" key={task._id}>
                 <TaskCard task={task} onDelete={deleteTask} />
               </div>
             ))
           )}
         </div>
+        <Pagination
+          itemsPerPage={itemsPerPage}
+          totalItems={tasks.length}
+          currentPage={currentPage}
+          paginate={paginate}
+        />
       </div>
     </div>
   );
+  
+  
 };
 
 export default AllTasks;

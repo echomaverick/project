@@ -21,6 +21,8 @@ const EditProject = () => {
     tasks: "",
   });
   const [notFound, setNotFound] = useState(false);
+  const [isUserDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [isTaskDropdownOpen, setTaskDropdownOpen] = useState(false);
 
   const { name, description, users: selectedUsers, tasks: selectedTasks } = project;
 
@@ -60,10 +62,6 @@ const EditProject = () => {
 
   const isAtLeastOneSelected = (array) => {
     return array.length > 0;
-  };
-
-  const isString = (text) => {
-    return typeof text === "string";
   };
 
   const isEmpty = (value) => value.trim() === "";
@@ -134,6 +132,40 @@ const EditProject = () => {
   const isAnyRequiredFieldEmpty = () => {
     return !name.trim() || !description.trim() || !isAtLeastOneSelected(selectedUsers) || !isAtLeastOneSelected(selectedTasks);
   };
+  
+  const handleUserDropdownToggle = () => {
+    setUserDropdownOpen(!isUserDropdownOpen);
+  };
+
+  const handleTaskDropdownToggle = () => {
+    setTaskDropdownOpen(!isTaskDropdownOpen);
+  };
+
+  const handleSelectAll = (event) => {
+    const { name, options } = event.target;
+    const allValues = Array.from(options).map((option) => option.value);
+    setProject((prevProject) => ({
+      ...prevProject,
+      [name]: allValues,
+    }));
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "",
+    }));
+  };
+  
+  const handleUnselectAll = (event) => {
+    const { name } = event.target;
+    setProject((prevProject) => ({
+      ...prevProject,
+      [name]: [],
+    }));
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "",
+    }));
+  };
+
   if (notFound) {
     return <Redirect to="/not-found" />;
   }
@@ -176,76 +208,108 @@ const EditProject = () => {
             <label htmlFor="users" className="form-label">
               Select Users:
             </label>
-            <select
-              multiple
-              className={`form-control ${errors.users ? "is-invalid" : ""}`}
-              id="users"
-              name="users"
-              value={selectedUsers}
-              onChange={onInputChange}
-            >
-              {users.map((user) => (
-                <option key={user._id} value={user._id}>
-                  {user.username}
-                </option>
-              ))}
-            </select>
-            {errors.users && <div className="invalid-feedback">{errors.users}</div>}
+            <div className="custom-dropdown" style={{ marginBottom: "1rem" }}>
+              <button
+                type="button"
+                className="btn btn-secondary custom-dropdown-toggle"
+                onClick={handleUserDropdownToggle}
+                style={{ width: "100%" }}
+              >
+                {selectedUsers.length === 0 ? "Select Users" : `Selected Users (${selectedUsers.length})`}{" "}
+                <i className="bi bi-caret-down-fill"></i>
+              </button>
+              {isUserDropdownOpen && (
+                <div className="card custom-dropdown-content">
+                  <div className="card-body">
+                    <div className="d-flex justify-content-center mb-2">
+                      <button type="button" className="btn btn-primary btn-sm me-2" onClick={handleSelectAll}>
+                        Select All
+                      </button>
+                      <button type="button" className="btn btn-primary btn-sm" onClick={handleUnselectAll}>
+                        Unselect All
+                      </button>
+                    </div>
+                    <div className="custom-dropdown-user-list" style={{ maxHeight: "200px", overflowY: "auto" }}>
+                      {users.map((user) => (
+                        <div key={user._id} className="form-check">
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            value={user._id}
+                            checked={selectedUsers.includes(user._id)}
+                            onChange={onInputChange}
+                            name="users"
+                          />
+                          <label className="form-check-label custom-dropdown-label">
+                            {user.name} {user.surname}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+            {errors.users && <div className="text-danger">{errors.users}</div>}
           </div>
           <div className="mb-3">
             <label htmlFor="tasks" className="form-label">
               Select Tasks:
             </label>
-            <select
-              multiple
-              className={`form-control ${errors.tasks ? "is-invalid" : ""}`}
-              id="tasks"
-              name="tasks"
-              value={selectedTasks}
-              onChange={onInputChange}
-            >
-              {tasks.map((task) => (
-                <option key={task._id} value={task._id}>
-                  {task.title}
-                </option>
-              ))}
-            </select>
-            {errors.tasks && <div className="invalid-feedback">{errors.tasks}</div>}
+            <div className="custom-dropdown" style={{ marginBottom: "1rem" }}>
+              <button
+                type="button"
+                className="btn btn-secondary custom-dropdown-toggle"
+                onClick={handleTaskDropdownToggle}
+                style={{ width: "100%" }}
+              >
+                {selectedTasks.length === 0 ? "Select Tasks" : `Selected Tasks (${selectedTasks.length})`}{" "}
+                <i className="bi bi-caret-down-fill"></i>
+              </button>
+              {isTaskDropdownOpen && (
+                <div className="card custom-dropdown-content">
+                  <div className="card-body">
+                    <div className="d-flex justify-content-center mb-2">
+                      <button type="button" className="btn btn-primary btn-sm me-2" onClick={handleSelectAll}>
+                        Select All
+                      </button>
+                      <button type="button" className="btn btn-primary btn-sm" onClick={handleUnselectAll}>
+                        Unselect All
+                      </button>
+                    </div>
+                    <div className="custom-dropdown-user-list" style={{ maxHeight: "200px", overflowY: "auto" }}>
+                      {tasks.map((task) => (
+                        <div key={task._id} className="form-check">
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            value={task._id}
+                            checked={selectedTasks.includes(task._id)}
+                            onChange={onInputChange}
+                            name="tasks"
+                          />
+                          <label className="form-check-label custom-dropdown-label">{task.title}</label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+            {errors.tasks && <div className="text-danger">{errors.tasks}</div>}
           </div>
-          <div className="d-flex justify-content-start">
-            <button className="btn btn-primary" type="submit" disabled={loading || isAnyRequiredFieldEmpty()}>
-              {loading ? "Updating..." : "Update Project"}
-            </button>
-            <Link className="btn btn-primary ms-2" to="/projects">
-              Cancel
-            </Link>
-          </div>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={loading || isAnyRequiredFieldEmpty()}
+          >
+            Update Project
+          </button>
+          <Link to="/projects" className="btn btn-secondary ms-2">
+            Cancel
+          </Link>
         </form>
-
-        {loading && (
-          <div className="loader-container">
-            <div className="loader"></div>
-          </div>
-        )}
       </div>
-      <style>
-        {`
-          /* Additional styles for mobile view */
-          @media (max-width: 576px) {
-            .btn {
-              margin-top: 10px;
-              pointer-events: ${isAnyRequiredFieldEmpty() ? "none" : "auto"};
-            }
-
-            /* Adjust the error message position */
-            .invalid-feedback {
-              display: block;
-              margin-top: 4px;
-              font-size: 12px;
-            }
-          }
-        `}
-      </style>
     </div>
   );
 };

@@ -73,21 +73,25 @@ const AllUsers = () => {
   const [deletingUser, setDeletingUser] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(6);
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     loadUsers();
-  }, [currentPage]); // Fetch data when currentPage changes
+  }, [currentPage]);
 
   const loadUsers = async () => {
     try {
-      setLoading(true); // Set loading to true while fetching data
+      setLoading(true);
+      setError(null);
+
       const response = await axios.get("http://localhost:5000/api/users");
       setUsers(response.data);
     } catch (error) {
       console.error("Error loading users:", error);
+      setError("Error loading users. Please try again later.");
     } finally {
-      setLoading(false); // Set loading to false when data is fetched
+      setLoading(false);
     }
   };
 
@@ -103,13 +107,67 @@ const AllUsers = () => {
     }
   };
 
-  // Calculate the index of the first and last item on the current page
   const indexOfLastUser = currentPage * itemsPerPage;
   const indexOfFirstUser = indexOfLastUser - itemsPerPage;
   const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
 
-  // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  if (loading) {
+    return (
+      <div className="container mt-4">
+        <div className="py-4">
+          <div className="d-flex justify-content-between align-items-center">
+            <h1 className="display-4">All Users</h1>
+            <Link to="/user/add" className="btn btn-primary btn-rounded">
+              Add a User
+            </Link>
+          </div>
+          <div className="row mt-4">
+            {Array.from({ length: itemsPerPage }).map((_, index) => (
+              <div className="col-md-6 col-lg-4 mb-4" key={index}>
+                <SkeletonUserCard />
+              </div>
+            ))}
+          </div>
+          <Pagination
+            itemsPerPage={itemsPerPage}
+            totalItems={users.length}
+            currentPage={currentPage}
+            paginate={paginate}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mt-4">
+        <div className="alert alert-danger" role="alert">
+          {error}
+        </div>
+      </div>
+    );
+  }
+
+  if (currentUsers.length === 0) {
+    return (
+      <div className="container mt-4">
+        <div className="py-4">
+          <div className="d-flex justify-content-between align-items-center">
+            <h1 className="display-4">All Users</h1>
+            <Link to="/user/add" className="btn btn-primary btn-rounded">
+              Add a User
+            </Link>
+          </div>
+          <div className="alert alert-info" role="alert">
+            No users found.
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mt-4">
@@ -121,21 +179,11 @@ const AllUsers = () => {
           </Link>
         </div>
         <div className="row mt-4">
-          {loading ? (
-            // Render skeleton loaders while data is being fetched
-            Array.from({ length: itemsPerPage }).map((_, index) => (
-              <div className="col-md-6 col-lg-4 mb-4" key={index}>
-                <SkeletonUserCard />
-              </div>
-            ))
-          ) : (
-            // Render the user cards when data is available
-            currentUsers.map((user) => (
-              <div className="col-md-6 col-lg-4 mb-4" key={user._id}>
-                <UserCard user={user} onDelete={deleteUser} />
-              </div>
-            ))
-          )}
+          {currentUsers.map((user) => (
+            <div className="col-md-6 col-lg-4 mb-4" key={user._id}>
+              <UserCard user={user} onDelete={deleteUser} />
+            </div>
+          ))}
         </div>
         <Pagination
           itemsPerPage={itemsPerPage}

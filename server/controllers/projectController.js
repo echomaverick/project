@@ -102,6 +102,7 @@ const getAllProjects = async (req, res) => {
   }
 };
 
+
 //get project by ID
 const getProjectById = async (req, res) => {
   try {
@@ -126,6 +127,8 @@ const getProjectById = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+
 
 
 //update project
@@ -227,11 +230,13 @@ const deleteProject = async (req, res) => {
     const { projectId } = req.params;
     console.log("Received project ID for deletion:", projectId);
 
-    const deletedProject = await Project.findByIdAndDelete(projectId);
+    const project = await Project.findById(projectId);
 
-    if (!deletedProject) {
+    if (!project) {
       return res.status(404).json({ error: "Project not found" });
     }
+
+    const deletedProject = await Project.findByIdAndDelete(projectId);
 
     await User.updateMany(
       { projects: projectId },
@@ -249,6 +254,7 @@ const deleteProject = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 module.exports = {
   createProject,

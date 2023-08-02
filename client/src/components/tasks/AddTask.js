@@ -226,7 +226,7 @@ const AddTask = () => {
             >
               Add Task
             </button>
-            <button className="btn btn-primary" onClick={() => history.push("/projects")}>
+            <button className="btn btn-primary" onClick={() => history.push("/tasks")}>
               Cancel
             </button>
           </div>

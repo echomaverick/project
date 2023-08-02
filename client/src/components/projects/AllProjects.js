@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import SkeletonProjectCard from '../users/SkeletonUserCard';
+import Pagination from '../users/Pagination';
 
 const ProjectCard = ({ project, onDelete }) => {
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -60,35 +62,46 @@ const ProjectCard = ({ project, onDelete }) => {
 
 const AllProjects = () => {
   const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true); 
-  const [deleting, setDeleting] = useState(false); 
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
 
   useEffect(() => {
     loadProjects();
-  }, []);
+  }, [currentPage]);
 
   const loadProjects = async () => {
     try {
+      setLoading(true); 
       const response = await axios.get("http://localhost:5000/api/projects");
       setProjects(response.data);
-      setLoading(false); 
+      setLoading(false);
     } catch (error) {
-      setLoading(false); 
+      setLoading(false);
       console.error("Error loading projects:", error);
     }
   };
 
   const deleteProject = async (id) => {
     try {
-      setDeleting(true); 
       await axios.delete(`http://localhost:5000/api/projects/${id}`);
-      setDeleting(false);
-      loadProjects(); 
+      loadProjects();
     } catch (error) {
-      setDeleting(false); 
       console.error("Error deleting project:", error);
     }
   };
+
+  const paginate = (pageNumber) => {
+    setLoading(true);
+    setTimeout(() => {
+      setCurrentPage(pageNumber);
+      setLoading(false);
+    }, 900);
+  };
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentProjects = projects.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
     <div className="container">
@@ -101,22 +114,40 @@ const AllProjects = () => {
         </div>
         <div className="row">
           {loading ? (
-            <div className="loader-container">
-              <div className="loader"></div>
-            </div>
+            <>
+              <div className="col-md-6 col-lg-4 mb-4">
+                <SkeletonProjectCard />
+              </div>
+              <div className="col-md-6 col-lg-4 mb-4">
+                <SkeletonProjectCard />
+              </div>
+              <div className="col-md-6 col-lg-4 mb-4">
+                <SkeletonProjectCard />
+              </div>
+              <div className="col-md-6 col-lg-4 mb-4">
+                <SkeletonProjectCard />
+              </div>
+              <div className="col-md-6 col-lg-4 mb-4">
+                <SkeletonProjectCard />
+              </div>
+              <div className="col-md-6 col-lg-4 mb-4">
+                <SkeletonProjectCard />
+              </div>
+            </>
           ) : (
-            projects.map((project) => (
+            currentProjects.map((project) => (
               <div className="col-md-6 col-lg-4 mb-4" key={project._id}>
                 <ProjectCard project={project} onDelete={deleteProject} />
               </div>
             ))
           )}
         </div>
-        {deleting && ( 
-          <div className="loader-container">
-            <div className="loader"></div>
-          </div>
-        )}
+        <Pagination
+          itemsPerPage={itemsPerPage}
+          totalItems={projects.length}
+          currentPage={currentPage}
+          paginate={paginate}
+        />
       </div>
     </div>
   );

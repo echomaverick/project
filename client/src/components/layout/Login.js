@@ -1,17 +1,20 @@
+// Login.js
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import '../styles/login.css';
 
-function BasicExample() {
+function Login({ setIsLoggedIn }) {
   const history = useHistory();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
     if (username === 'admin' && password === 'admin') {
-      history.push('/users');
+      localStorage.setItem('username', username); // Save username to localStorage
+      setIsLoggedIn(true);
+      history.push('/');
     } else {
       alert('Invalid credentials');
     }
@@ -49,4 +52,4 @@ function BasicExample() {
   );
 }
 
-export default BasicExample;
+export default Login;

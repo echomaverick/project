@@ -3,11 +3,15 @@ import { Link, useParams, Redirect } from "react-router-dom";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import Loader from "../layout/Loader";
 
 const Task = () => {
   const [loading, setLoading] = useState(true);
-  const [task, setTask] = useState(null);
+  const [task, setTask] = useState({
+    title: "",
+    description: "",
+    users: [],
+    projects: []
+  });
 
   const { id } = useParams();
 
@@ -19,29 +23,30 @@ const Task = () => {
     const objectIdRegex = /^[0-9a-fA-F]{24}$/;
     if (!objectIdRegex.test(id)) {
       setLoading(false);
+      console.log("Invalid task ID");
       return;
     }
-
+  
     try {
+      console.log("Fetching task data...");
       const res = await axios.get(`http://localhost:5000/api/tasks/${id}`);
+      console.log("Task data:", res.data);
       setTask(res.data);
-
+  
       if (res.data.assignedTo && res.data.assignedTo.length > 0) {
-        const assignedUsersPromises = res.data.assignedTo.map(
-          async (userId) => {
-            const userRes = await axios.get(
-              `http://localhost:5000/api/users/${userId["$oid"]}`
-            );
-            return userRes.data;
-          }
-        );
+        const assignedUsersPromises = res.data.assignedTo.map(async (userId) => {
+          const userRes = await axios.get(
+            `http://localhost:5000/api/users/${userId["$oid"]}`
+          );
+          return userRes.data;
+        });
         const assignedUsersData = await Promise.all(assignedUsersPromises);
         setTask((prevState) => ({
           ...prevState,
           assignedTo: assignedUsersData,
         }));
       }
-
+  
       if (res.data.projects && res.data.projects.length > 0) {
         const associatedProjectsPromises = res.data.projects.map(
           async (projectId) => {
@@ -59,13 +64,14 @@ const Task = () => {
           projects: associatedProjectsData,
         }));
       }
-
-      setLoading(false); 
+  
+      setLoading(false);
     } catch (error) {
       console.log("Error: ", error);
-      setLoading(false); 
+      setLoading(false);
     }
   };
+  
 
   if (!task && !loading) {
     return <Redirect to="/not-found" />;
@@ -80,8 +86,6 @@ const Task = () => {
             Go back to tasks
           </Link>
           <hr />
-
-          {loading && <Loader />}
 
           {!loading && (
             <div className="row">

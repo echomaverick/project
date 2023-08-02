@@ -1,11 +1,9 @@
-/* skeletonloader.css */
-
 .skeleton-card {
     display: flex;
     align-items: center;
     padding: 70px;
     border-radius: 20px;
-    background-color: #f5f5f5;
+    background-color: #efececb8;
     margin-bottom: 20px;
   }
   
@@ -16,15 +14,15 @@
   }
   
   .skeleton-name {
-    width: 100%; /* Adjusted width to take full available width */
-    height: 24px; /* Increased height for name */
-    background-color: #ddd; /* Light gray rectangle for name */
-    margin-bottom: 8px; /* Reduced margin-bottom to match user card */
+    width: 100%; 
+    height: 24px; 
+    background-color: #ddd; 
+    margin-bottom: 8px;
   }
   
   .skeleton-username {
-    width: 80%; /* Adjusted width to take most of the available width */
-    height: 18px; /* Increased height for username */
-    background-color: #ddd; /* Light gray rectangle for username */
+    width: 80%; 
+    height: 18px; 
+    background-color: #ddd; 
   }
   

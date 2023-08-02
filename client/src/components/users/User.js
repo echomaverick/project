@@ -5,7 +5,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 const User = () => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({
+    name: "",
+    surname: "",
+    username: "",
+    email: "",
+    projects: [],
+    tasks: [],
+
+  });
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -14,44 +22,62 @@ const User = () => {
   useEffect(() => {
     loadUser();
   }, []);
-
+  
+  
   const loadUser = async () => {
     const objectIdRegex = /^[0-9a-fA-F]{24}$/;
-
-   
+  
     if (!objectIdRegex.test(id)) {
       setLoading(false);
       setUser(null);
+      console.log("Invalid ID");
       return;
     }
-
+  
     try {
+      console.log("Fetching user data...");
+      console.log(id);
       const res = await axios.get(`http://localhost:5000/api/users/${id}`);
-      
+  
       if (res.status === 200) {
+        console.log("User data:", res.data);
         setUser(res.data);
-
-        const roleRes = await axios.get(`http://localhost:5000/api/roles/${res.data.role["$oid"]}`);
-        setUser((prevState) => ({ ...prevState, role: roleRes.data.name }));
-
+  
+        if (res.data.role && res.data.role["$oid"]) {
+          try {
+            console.log("Fetching role data...");
+            const roleRes = await axios.get(`http://localhost:5000/api/roles/${res.data.role["$oid"]}`);
+            console.log("Role data:", roleRes.data);
+            setUser((prevState) => ({ ...prevState, role: roleRes.data.name }));
+          } catch (error) {
+            console.error("Error loading role:", error);
+            setUser((prevState) => ({ ...prevState, role: "Role Not Found" }));
+          }
+        } else {
+          setUser((prevState) => ({ ...prevState, role: "Role ID Missing" }));
+        }
+  
         const userTaskIds = res.data.tasks.map((taskId) => taskId["$oid"]);
         const userTasks = tasks.filter((task) => userTaskIds.includes(task._id["$oid"]));
         setTasks(userTasks);
-
-        setLoading(false); 
+  
+        setLoading(false);
       } else if (res.status === 404) {
+        setLoading(false);
+        setUser(null);
+      } else {
+        console.error("Unexpected response status:", res.status);
         setLoading(false);
         setUser(null);
       }
     } catch (error) {
       console.error("Error loading user:", error);
       setLoading(false);
+      setUser(null);
     }
   };
+  
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
 
   if (!user) {
     return <Redirect to="/not-found" />;
@@ -81,9 +107,7 @@ const User = () => {
               <p>
                 <strong>Email:</strong> {user.email}
               </p>
-              <p>
-                <strong>Role:</strong> {user.role}
-              </p>
+              
             </div>
           </div>
 
