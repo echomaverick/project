@@ -147,7 +147,7 @@ const AllUsers = () => {
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
-    setCurrentPage(1); // Reset the current page to 1 when a new search term is entered
+    setCurrentPage(1);
   };
 
   const handleSearchClear = () => {

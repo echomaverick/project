@@ -24,10 +24,9 @@ const User = () => {
 
   const loadUser = async () => {
     const objectIdRegex = /^[0-9a-fA-F]{24}$/;
-
+  
     if (!objectIdRegex.test(id)) {
       setLoading(false);
-      setUser(null);
       console.log("Invalid ID");
       return;
     }
