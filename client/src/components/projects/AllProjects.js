@@ -5,22 +5,24 @@ import SkeletonProjectCard from "../users/SkeletonUserCard";
 import Pagination from "../users/Pagination";
 import "../styles/projectSearch.css";
 
-const ProjectCard = ({ project, onDelete }) => {
+const ProjectCard = ({ project, onDelete, onEdit }) => {
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   const handleDelete = () => {
-    console.log("Delete button clicked for project ID:", project._id);
     setShowConfirmation(true);
   };
 
   const confirmDelete = () => {
-    console.log("Confirm delete called with project ID:", project._id);
-    onDelete(project._id);
+    onDelete(project);
     setShowConfirmation(false);
   };
 
   const cancelDelete = () => {
     setShowConfirmation(false);
+  };
+
+  const handleEdit = () => {
+    onEdit(project._id);
   };
 
   return (
@@ -31,24 +33,15 @@ const ProjectCard = ({ project, onDelete }) => {
       </div>
       <div className="card-footer d-flex justify-content-between align-items-center rounded-bottom">
         {showConfirmation ? (
-          <div
-            className="popup bg-white rounded p-3 d-flex flex-column align-items-center justify-content-center"
-            style={{ width: "600px", minHeight: "400px" }}
-          >
+          <div className="popup bg-white rounded p-3 d-flex flex-column align-items-center justify-content-center" style={{ width: "600px", minHeight: "200px" }}>
             <p className="confirmation-text" style={{ fontSize: "24px" }}>
               Are you sure you want to delete?
             </p>
             <div className="btn-group d-flex align-items-center">
-              <button
-                className="btn1 btn-danger btn-rounded"
-                onClick={confirmDelete}
-              >
+              <button className="btn1 btn-danger btn-rounded" onClick={confirmDelete}>
                 Delete
               </button>
-              <button
-                className="btn1 btn-secondary btn-rounded ml-2"
-                onClick={cancelDelete}
-              >
+              <button className="btn1 btn-secondary btn-rounded ml-2" onClick={cancelDelete}>
                 Cancel
               </button>
             </div>
@@ -61,16 +54,10 @@ const ProjectCard = ({ project, onDelete }) => {
             >
               View
             </Link>
-            <Link
-              className="btn btn-outline-primary btn-rounded"
-              to={`/projects/edit/${project._id}`}
-            >
+            <button className="btn btn-outline-primary btn-rounded" onClick={() => handleEdit()}>
               Edit
-            </Link>
-            <button
-              className="btn btn-danger btn-rounded ml-2"
-              onClick={handleDelete}
-            >
+            </button>
+            <button className="btn btn-danger btn-rounded ml-2" onClick={() => handleDelete()}>
               Delete
             </button>
           </div>
@@ -87,6 +74,8 @@ const AllProjects = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [selectedProject, setSelectedProject] = useState(null);
 
   const itemsPerPage = 6;
   const history = useHistory();
@@ -107,9 +96,9 @@ const AllProjects = () => {
     }
   };
 
-  const deleteProject = async (id) => {
+  const deleteProject = async (project) => {
     try {
-      await axios.delete(`http://localhost:5000/api/projects/${id}`);
+      await axios.delete(`http://localhost:5000/api/projects/${project._id}`);
       loadProjects();
     } catch (error) {
       console.error("Error deleting project:", error);
@@ -125,8 +114,32 @@ const AllProjects = () => {
     history.push(`/projects/${projectId}`);
   };
 
+  const handleEditProject = (projectId) => {
+    history.push(`/projects/edit/${projectId}`);
+  };
+
   const handleSearchClear = () => {
     setSearchTerm("");
+  };
+
+  const handleDelete = (project) => {
+    setSelectedProject(project);
+    setShowConfirmation(true);
+  };
+
+  const confirmDelete = async () => {
+    if (selectedProject) {
+      try {
+        await deleteProject(selectedProject);
+        setShowConfirmation(false);
+      } catch (error) {
+        console.error("Error deleting project:", error);
+      }
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowConfirmation(false);
   };
 
   const paginate = (pageNumber) => {
@@ -138,18 +151,14 @@ const AllProjects = () => {
 
   useEffect(() => {
     if (searchTerm) {
-      const filteredProjects = projects.filter((project) =>
-        project.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      const filteredProjects = projects.filter((project) => project.name.toLowerCase().includes(searchTerm.toLowerCase()));
       setSearchResults(filteredProjects);
     } else {
       setSearchResults([]);
     }
   }, [searchTerm, projects]);
 
-  const currentProjects = searchTerm
-    ? searchResults.slice(indexOfFirstItem, indexOfLastItem)
-    : projects.slice(indexOfFirstItem, indexOfLastItem);
+  const currentProjects = searchTerm ? searchResults.slice(indexOfFirstItem, indexOfLastItem) : projects.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
     <div className="container">
@@ -157,22 +166,14 @@ const AllProjects = () => {
         <div className="d-flex justify-content-between align-items-center">
           <h1 className="text-center">All Projects</h1>
           <div className="search-bar">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={handleSearchChange}
-              placeholder="Search projects..."
-            />
+            <input type="text" value={searchTerm} onChange={handleSearchChange} placeholder="Search projects..." />
             {searchTerm && (
               <button className="clear-btn" onClick={handleSearchClear}>
                 Clear
               </button>
             )}
           </div>
-          <Link
-            to="/project/add"
-            className="btn btn-primary btn-sm btn-rounded"
-          >
+          <Link to="/projects/add" className="btn btn-primary btn-sm btn-rounded">
             Add a Project
           </Link>
         </div>
@@ -204,23 +205,34 @@ const AllProjects = () => {
             </div>
           ) : (
             currentProjects.map((project) => (
-              <div
-                className="col-md-6 col-lg-4 mb-4"
-                key={project._id}
-                onClick={() => handleProjectClick(project._id)}
-              >
-                <ProjectCard project={project} onDelete={deleteProject} />
+              <div className="col-md-6 col-lg-4 mb-4" key={project._id}>
+                <ProjectCard
+                  project={project}
+                  onDelete={() => handleDelete(project)}
+                  onEdit={() => handleEditProject(project._id)}
+                />
               </div>
             ))
           )}
         </div>
-        <Pagination
-          itemsPerPage={itemsPerPage}
-          totalItems={searchTerm ? searchResults.length : projects.length}
-          currentPage={currentPage}
-          paginate={paginate}
-        />
+        <Pagination itemsPerPage={itemsPerPage} totalItems={searchTerm ? searchResults.length : projects.length} currentPage={currentPage} paginate={paginate} />
       </div>
+      {showConfirmation && (
+        <div className="popup bg-white rounded p-3 d-flex flex-column align-items-center justify-content-center" style={{ width: "600px", minHeight: "200px" }}>
+          <p className="confirmation-text" style={{ fontSize: "24px" }}>
+            Are you sure you want to delete?
+          </p>
+          <div className="btn-group d-flex align-items-center">
+            <button className="btn1 btn-danger btn-rounded" onClick={confirmDelete}>
+              Delete
+            </button>
+            <button className="btn1 btn-secondary btn-rounded ml-2" onClick={cancelDelete}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+      {showConfirmation && <div className="popup-shadow"></div>}
     </div>
   );
 };

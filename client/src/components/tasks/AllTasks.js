@@ -39,7 +39,7 @@ const TaskCard = ({ task, onDelete }) => {
         {showConfirmation ? (
           <div
             className="popup bg-white rounded p-3 d-flex flex-column align-items-center justify-content-center"
-            style={{ width: "600px", minHeight: "400px" }}
+            style={{ width: "600px", minHeight: "200px" }}
           >
             <p className="confirmation-text" style={{ fontSize: "24px" }}>
               Are you sure you want to delete?
@@ -146,7 +146,7 @@ const AllTasks = () => {
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
-    setCurrentPage(1); // Reset the current page to 1 when a new search term is entered
+    setCurrentPage(1);
   };
 
   const handleSearchClear = () => {
