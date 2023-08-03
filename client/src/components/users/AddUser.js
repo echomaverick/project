@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
-import '../styles/popup.css';
+import "../styles/popup.css";
 
 const AddUser = () => {
   const [name, setName] = useState("");
@@ -18,7 +18,9 @@ const AddUser = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const usersResponse = await axios.get("http://localhost:5000/api/users");
+        const usersResponse = await axios.get(
+          "http://localhost:5000/api/users"
+        );
         const users = usersResponse.data;
         setExistingEmails(users.map((user) => user.email.toLowerCase()));
         setExistingUsernames(users.map((user) => user.username.toLowerCase()));
@@ -45,10 +47,12 @@ const AddUser = () => {
 
     const nameSurnameRegex = /^[A-Z][A-Za-z]{2,}$/;
     if (!nameSurnameRegex.test(name)) {
-      newErrors.name = "Name should be at least 3 characters long and start with a capital letter and contain only alphabetic characters.";
+      newErrors.name =
+        "Name should be at least 3 characters long and start with a capital letter and contain only alphabetic characters.";
     }
     if (!nameSurnameRegex.test(surname)) {
-      newErrors.surname = "Surname should be at least 3 characters long and start with a capital letter and contain only alphabetic characters.";
+      newErrors.surname =
+        "Surname should be at least 3 characters long and start with a capital letter and contain only alphabetic characters.";
     }
 
     const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
@@ -59,7 +63,8 @@ const AddUser = () => {
     }
 
     if (username.trim() === "" || username === "1234") {
-      newErrors.username = "Username should contain at least one letter, be at least 3 characters long.";
+      newErrors.username =
+        "Username should contain at least one letter, be at least 3 characters long.";
     } else if (existingUsernames.includes(username.toLowerCase())) {
       newErrors.username = "This username already exists in the database.";
     }
@@ -80,7 +85,9 @@ const AddUser = () => {
       );
 
       if (!adminRole) {
-        setErrors({ adminRole: "The 'admin' role does not exist in the database." });
+        setErrors({
+          adminRole: "The 'admin' role does not exist in the database.",
+        });
         setFormSubmitting(false);
         return;
       }
@@ -103,12 +110,11 @@ const AddUser = () => {
       );
       console.log("User added successfully:", response.data);
       setFormSubmitting(false);
-      setShowSuccessModal(true); 
+      setShowSuccessModal(true);
 
       history.push("/users");
-
     } catch (error) {
-      setFormSubmitting(false); 
+      setFormSubmitting(false);
       console.error("Error adding user:", error);
     }
   };
@@ -147,7 +153,9 @@ const AddUser = () => {
         <div className="col-md-8 col-lg-6">
           <div className="shadow p-5">
             <h2 className="text-center mb-4">Add User</h2>
-            {errors.adminRole && <div className="alert alert-danger">{errors.adminRole}</div>}
+            {errors.adminRole && (
+              <div className="alert alert-danger">{errors.adminRole}</div>
+            )}
             <form onSubmit={handleSubmit}>
               <div className="form-group mb-3">
                 <label htmlFor="name" className="form-label">
@@ -161,7 +169,9 @@ const AddUser = () => {
                   value={name}
                   onChange={handleNameChange}
                 />
-                {errors.name && <div className="text-danger">{errors.name}</div>} 
+                {errors.name && (
+                  <div className="text-danger">{errors.name}</div>
+                )}
               </div>
               <div className="form-group mb-3">
                 <label htmlFor="surname" className="form-label">
@@ -175,7 +185,9 @@ const AddUser = () => {
                   value={surname}
                   onChange={handleSurnameChange}
                 />
-                {errors.surname && <div className="text-danger">{errors.surname}</div>} 
+                {errors.surname && (
+                  <div className="text-danger">{errors.surname}</div>
+                )}
               </div>
               <div className="form-group mb-3">
                 <label htmlFor="username" className="form-label">
@@ -189,7 +201,9 @@ const AddUser = () => {
                   value={username}
                   onChange={handleUsernameChange}
                 />
-                {errors.username && <div className="text-danger">{errors.username}</div>}
+                {errors.username && (
+                  <div className="text-danger">{errors.username}</div>
+                )}
               </div>
               <div className="form-group mb-3">
                 <label htmlFor="email" className="form-label">
@@ -203,7 +217,9 @@ const AddUser = () => {
                   value={email}
                   onChange={handleEmailChange}
                 />
-                {errors.email && <div className="text-danger">{errors.email}</div>}
+                {errors.email && (
+                  <div className="text-danger">{errors.email}</div>
+                )}
               </div>
               <div className="d-flex justify-content-start">
                 <button
@@ -215,7 +231,7 @@ const AddUser = () => {
                 </button>
                 <button
                   type="button"
-                  className="btn btn-primary btn-sm" 
+                  className="btn btn-primary btn-sm"
                   onClick={() => history.push("/users")}
                 >
                   Cancel

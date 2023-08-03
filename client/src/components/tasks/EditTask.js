@@ -73,8 +73,12 @@ const EditTask = () => {
     const errors = {
       title: isEmpty(title) ? "Task title is required." : "",
       description: isEmpty(description) ? "Task description is required." : "",
-      assignedTo: isAtLeastOneSelected(assignedTo) ? "" : "At least one user should be selected.",
-      projects: isAtLeastOneSelected(selectedProjects) ? "" : "At least one project should be selected.",
+      assignedTo: isAtLeastOneSelected(assignedTo)
+        ? ""
+        : "At least one user should be selected.",
+      projects: isAtLeastOneSelected(selectedProjects)
+        ? ""
+        : "At least one project should be selected.",
     };
     setErrors(errors);
 
@@ -119,7 +123,9 @@ const EditTask = () => {
       }
 
       const userIDs = result.data.assignedTo.map((user) => user._id.toString());
-      const projectIDs = result.data.projects.map((project) => project._id.toString());
+      const projectIDs = result.data.projects.map((project) =>
+        project._id.toString()
+      );
       setTask({
         title: result.data.title,
         description: result.data.description,
@@ -142,7 +148,12 @@ const EditTask = () => {
   };
 
   const isAnyRequiredFieldEmpty = () => {
-    return isEmpty(title) || isEmpty(description) || !isAtLeastOneSelected(assignedTo) || !isAtLeastOneSelected(selectedProjects);
+    return (
+      isEmpty(title) ||
+      isEmpty(description) ||
+      !isAtLeastOneSelected(assignedTo) ||
+      !isAtLeastOneSelected(selectedProjects)
+    );
   };
 
   if (notFound) {
@@ -169,7 +180,7 @@ const EditTask = () => {
       [name]: "",
     }));
   };
-  
+
   const handleUnselectAll = (event) => {
     const { name } = event.target;
     setTask((prevTask) => ({
@@ -200,21 +211,27 @@ const EditTask = () => {
               value={title}
               onChange={onInputChange}
             />
-            {errors.title && <div className="invalid-feedback">{errors.title}</div>}
+            {errors.title && (
+              <div className="invalid-feedback">{errors.title}</div>
+            )}
           </div>
           <div className="mb-3">
             <label htmlFor="description" className="form-label">
               Description:
             </label>
             <textarea
-              className={`form-control ${errors.description ? "is-invalid" : ""}`}
+              className={`form-control ${
+                errors.description ? "is-invalid" : ""
+              }`}
               id="description"
               placeholder="Enter Task Description"
               name="description"
               value={description}
               onChange={onInputChange}
             />
-            {errors.description && <div className="invalid-feedback">{errors.description}</div>}
+            {errors.description && (
+              <div className="invalid-feedback">{errors.description}</div>
+            )}
           </div>
           <div className="mb-3">
             <label htmlFor="assignedTo" className="form-label">
@@ -227,21 +244,34 @@ const EditTask = () => {
                 onClick={handleUserDropdownToggle}
                 style={{ width: "100%" }}
               >
-                {assignedTo.length === 0 ? "Select Users" : `Selected Users (${assignedTo.length})`}{" "}
+                {assignedTo.length === 0
+                  ? "Select Users"
+                  : `Selected Users (${assignedTo.length})`}{" "}
                 <i className="bi bi-caret-down-fill"></i>
               </button>
               {isUserDropdownOpen && (
                 <div className="card custom-dropdown-content">
                   <div className="card-body">
                     <div className="d-flex justify-content-center mb-2">
-                      <button type="button" className="btn btn-primary btn-sm me-2" onClick={handleSelectAll}>
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm me-2"
+                        onClick={handleSelectAll}
+                      >
                         Select All
                       </button>
-                      <button type="button" className="btn btn-primary btn-sm" onClick={handleUnselectAll}>
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        onClick={handleUnselectAll}
+                      >
                         Unselect All
                       </button>
                     </div>
-                    <div className="custom-dropdown-user-list" style={{ maxHeight: "200px", overflowY: "auto" }}>
+                    <div
+                      className="custom-dropdown-user-list"
+                      style={{ maxHeight: "200px", overflowY: "auto" }}
+                    >
                       {users.map((user) => (
                         <div key={user._id} className="form-check">
                           <input
@@ -262,7 +292,9 @@ const EditTask = () => {
                 </div>
               )}
             </div>
-            {errors.assignedTo && <div className="text-danger">{errors.assignedTo}</div>}
+            {errors.assignedTo && (
+              <div className="text-danger">{errors.assignedTo}</div>
+            )}
           </div>
           <div className="mb-3">
             <label htmlFor="projects" className="form-label">
@@ -275,21 +307,34 @@ const EditTask = () => {
                 onClick={handleProjectDropdownToggle}
                 style={{ width: "100%" }}
               >
-                {selectedProjects.length === 0 ? "Select Projects" : `Selected Projects (${selectedProjects.length})`}{" "}
+                {selectedProjects.length === 0
+                  ? "Select Projects"
+                  : `Selected Projects (${selectedProjects.length})`}{" "}
                 <i className="bi bi-caret-down-fill"></i>
               </button>
               {isProjectDropdownOpen && (
                 <div className="card custom-dropdown-content">
                   <div className="card-body">
                     <div className="d-flex justify-content-center mb-2">
-                      <button type="button" className="btn btn-primary btn-sm me-2" onClick={handleSelectAll}>
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm me-2"
+                        onClick={handleSelectAll}
+                      >
                         Select All
                       </button>
-                      <button type="button" className="btn btn-primary btn-sm" onClick={handleUnselectAll}>
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        onClick={handleUnselectAll}
+                      >
                         Unselect All
                       </button>
                     </div>
-                    <div className="custom-dropdown-user-list" style={{ maxHeight: "200px", overflowY: "auto" }}>
+                    <div
+                      className="custom-dropdown-user-list"
+                      style={{ maxHeight: "200px", overflowY: "auto" }}
+                    >
                       {projects.map((project) => (
                         <div key={project._id} className="form-check">
                           <input
@@ -310,10 +355,16 @@ const EditTask = () => {
                 </div>
               )}
             </div>
-            {errors.projects && <div className="text-danger">{errors.projects}</div>}
+            {errors.projects && (
+              <div className="text-danger">{errors.projects}</div>
+            )}
           </div>
           <div className="d-flex justify-content-start">
-            <button className="btn btn-primary" type="submit" disabled={loading || isAnyRequiredFieldEmpty()}>
+            <button
+              className="btn btn-primary"
+              type="submit"
+              disabled={loading || isAnyRequiredFieldEmpty()}
+            >
               {loading ? "Updating..." : "Update Task"}
             </button>
             <Link className="btn btn-primary ms-2" to="/tasks">

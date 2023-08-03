@@ -11,7 +11,10 @@ const Pagination = ({ itemsPerPage, totalItems, currentPage, paginate }) => {
     <nav>
       <ul className="pagination justify-content-center">
         {pageNumbers.map((number) => (
-          <li key={number} className={`page-item ${currentPage === number ? "active" : ""}`}>
+          <li
+            key={number}
+            className={`page-item ${currentPage === number ? "active" : ""}`}
+          >
             <button onClick={() => paginate(number)} className="page-link">
               {number}
             </button>

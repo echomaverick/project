@@ -51,7 +51,9 @@ export default function MultipleSelectChip({
           multiple
           value={userSelection}
           onChange={handleUserChange}
-          input={<OutlinedInput id="select-multiple-chip" label="Select Users" />}
+          input={
+            <OutlinedInput id="select-multiple-chip" label="Select Users" />
+          }
           renderValue={(selected) => (
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
               {selected.map((value) => (
@@ -74,14 +76,21 @@ export default function MultipleSelectChip({
       </FormControl>
 
       <FormControl sx={{ m: 1, width: 300 }}>
-        <InputLabel id="demo-multiple-chip-label-tasks">Select Tasks:</InputLabel>
+        <InputLabel id="demo-multiple-chip-label-tasks">
+          Select Tasks:
+        </InputLabel>
         <Select
           labelId="demo-multiple-chip-label-tasks"
           id="demo-multiple-chip-tasks"
           multiple
           value={taskSelection}
           onChange={handleTaskChange}
-          input={<OutlinedInput id="select-multiple-chip-tasks" label="Select Tasks" />}
+          input={
+            <OutlinedInput
+              id="select-multiple-chip-tasks"
+              label="Select Tasks"
+            />
+          }
           renderValue={(selected) => (
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
               {selected.map((value) => (

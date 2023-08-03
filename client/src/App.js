@@ -22,9 +22,8 @@ import AddProject from "./components/projects/AddProject";
 import AddUser from "./components/users/AddUser";
 import Loader from "../src/components/layout/Loader";
 import NavigationBar from "./components/layout/NavigationBar";
-import Login from "./components/layout/Login";
 import NotFound from "../src/components/layout/NotFound";
-
+import About from "./components/pages/About";
 
 function App(props) {
   const [isLoading, setIsLoading] = useState(true);
@@ -56,6 +55,7 @@ function App(props) {
           {!isLoading && (
             <Switch>
               <Route exact path="/" component={Home} />
+              <Route exact path="/about" component={About} />
               {/* task routes */}
               <Route exact path="/tasks/:id" component={Task} />
               <Route exact path="/tasks" component={AllTasks} />
@@ -74,9 +74,6 @@ function App(props) {
               <Route exact path="/user/add" component={AddUser} />
               <Route exact path="/users/edit/:id" component={EditUser} />
               <Route exact path="/users/:id" component={User} />
-
-              {/*login */}
-              <Route exact path="/login" component={Login} />
 
               <Route component={NotFound} />
               <Redirect to="/" />

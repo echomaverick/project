@@ -10,7 +10,7 @@ const Task = () => {
     title: "",
     description: "",
     users: [],
-    projects: []
+    projects: [],
   });
 
   const { id } = useParams();
@@ -26,27 +26,29 @@ const Task = () => {
       console.log("Invalid task ID");
       return;
     }
-  
+
     try {
       console.log("Fetching task data...");
       const res = await axios.get(`http://localhost:5000/api/tasks/${id}`);
       console.log("Task data:", res.data);
       setTask(res.data);
-  
+
       if (res.data.assignedTo && res.data.assignedTo.length > 0) {
-        const assignedUsersPromises = res.data.assignedTo.map(async (userId) => {
-          const userRes = await axios.get(
-            `http://localhost:5000/api/users/${userId["$oid"]}`
-          );
-          return userRes.data;
-        });
+        const assignedUsersPromises = res.data.assignedTo.map(
+          async (userId) => {
+            const userRes = await axios.get(
+              `http://localhost:5000/api/users/${userId["$oid"]}`
+            );
+            return userRes.data;
+          }
+        );
         const assignedUsersData = await Promise.all(assignedUsersPromises);
         setTask((prevState) => ({
           ...prevState,
           assignedTo: assignedUsersData,
         }));
       }
-  
+
       if (res.data.projects && res.data.projects.length > 0) {
         const associatedProjectsPromises = res.data.projects.map(
           async (projectId) => {
@@ -64,14 +66,13 @@ const Task = () => {
           projects: associatedProjectsData,
         }));
       }
-  
+
       setLoading(false);
     } catch (error) {
       console.log("Error: ", error);
       setLoading(false);
     }
   };
-  
 
   if (!task && !loading) {
     return <Redirect to="/not-found" />;

@@ -24,7 +24,12 @@ const EditProject = () => {
   const [isUserDropdownOpen, setUserDropdownOpen] = useState(false);
   const [isTaskDropdownOpen, setTaskDropdownOpen] = useState(false);
 
-  const { name, description, users: selectedUsers, tasks: selectedTasks } = project;
+  const {
+    name,
+    description,
+    users: selectedUsers,
+    tasks: selectedTasks,
+  } = project;
 
   const loadUsersAndTasks = async () => {
     try {
@@ -69,9 +74,15 @@ const EditProject = () => {
   const isFormValid = () => {
     const errors = {
       name: isEmpty(name) ? "Project name is required." : "",
-      description: isEmpty(description) ? "Project description is required." : "",
-      users: isAtLeastOneSelected(selectedUsers) ? "" : "At least one user should be selected.",
-      tasks: isAtLeastOneSelected(selectedTasks) ? "" : "At least one task should be selected.",
+      description: isEmpty(description)
+        ? "Project description is required."
+        : "",
+      users: isAtLeastOneSelected(selectedUsers)
+        ? ""
+        : "At least one user should be selected.",
+      tasks: isAtLeastOneSelected(selectedTasks)
+        ? ""
+        : "At least one task should be selected.",
     };
     setErrors(errors);
 
@@ -104,12 +115,14 @@ const EditProject = () => {
     const objectIdRegex = /^[0-9a-fA-F]{24}$/;
 
     if (!objectIdRegex.test(id)) {
-      setNotFound(true); 
+      setNotFound(true);
       return;
     }
 
     try {
-      const result = await axios.get(`http://localhost:5000/api/projects/${id}`);
+      const result = await axios.get(
+        `http://localhost:5000/api/projects/${id}`
+      );
       if (!result.data) {
         setNotFound(true);
         return;
@@ -125,14 +138,19 @@ const EditProject = () => {
       });
     } catch (error) {
       console.error("Error loading project:", error);
-      setNotFound(true); 
+      setNotFound(true);
     }
   };
 
   const isAnyRequiredFieldEmpty = () => {
-    return !name.trim() || !description.trim() || !isAtLeastOneSelected(selectedUsers) || !isAtLeastOneSelected(selectedTasks);
+    return (
+      !name.trim() ||
+      !description.trim() ||
+      !isAtLeastOneSelected(selectedUsers) ||
+      !isAtLeastOneSelected(selectedTasks)
+    );
   };
-  
+
   const handleUserDropdownToggle = () => {
     setUserDropdownOpen(!isUserDropdownOpen);
   };
@@ -153,7 +171,7 @@ const EditProject = () => {
       [name]: "",
     }));
   };
-  
+
   const handleUnselectAll = (event) => {
     const { name } = event.target;
     setProject((prevProject) => ({
@@ -188,21 +206,27 @@ const EditProject = () => {
               value={name}
               onChange={onInputChange}
             />
-            {errors.name && <div className="invalid-feedback">{errors.name}</div>}
+            {errors.name && (
+              <div className="invalid-feedback">{errors.name}</div>
+            )}
           </div>
           <div className="mb-3">
             <label htmlFor="description" className="form-label">
               Description:
             </label>
             <textarea
-              className={`form-control ${errors.description ? "is-invalid" : ""}`}
+              className={`form-control ${
+                errors.description ? "is-invalid" : ""
+              }`}
               id="description"
               placeholder="Enter Project Description"
               name="description"
               value={description}
               onChange={onInputChange}
             />
-            {errors.description && <div className="invalid-feedback">{errors.description}</div>}
+            {errors.description && (
+              <div className="invalid-feedback">{errors.description}</div>
+            )}
           </div>
           <div className="mb-3">
             <label htmlFor="users" className="form-label">
@@ -215,21 +239,34 @@ const EditProject = () => {
                 onClick={handleUserDropdownToggle}
                 style={{ width: "100%" }}
               >
-                {selectedUsers.length === 0 ? "Select Users" : `Selected Users (${selectedUsers.length})`}{" "}
+                {selectedUsers.length === 0
+                  ? "Select Users"
+                  : `Selected Users (${selectedUsers.length})`}{" "}
                 <i className="bi bi-caret-down-fill"></i>
               </button>
               {isUserDropdownOpen && (
                 <div className="card custom-dropdown-content">
                   <div className="card-body">
                     <div className="d-flex justify-content-center mb-2">
-                      <button type="button" className="btn btn-primary btn-sm me-2" onClick={handleSelectAll}>
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm me-2"
+                        onClick={handleSelectAll}
+                      >
                         Select All
                       </button>
-                      <button type="button" className="btn btn-primary btn-sm" onClick={handleUnselectAll}>
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        onClick={handleUnselectAll}
+                      >
                         Unselect All
                       </button>
                     </div>
-                    <div className="custom-dropdown-user-list" style={{ maxHeight: "200px", overflowY: "auto" }}>
+                    <div
+                      className="custom-dropdown-user-list"
+                      style={{ maxHeight: "200px", overflowY: "auto" }}
+                    >
                       {users.map((user) => (
                         <div key={user._id} className="form-check">
                           <input
@@ -263,21 +300,34 @@ const EditProject = () => {
                 onClick={handleTaskDropdownToggle}
                 style={{ width: "100%" }}
               >
-                {selectedTasks.length === 0 ? "Select Tasks" : `Selected Tasks (${selectedTasks.length})`}{" "}
+                {selectedTasks.length === 0
+                  ? "Select Tasks"
+                  : `Selected Tasks (${selectedTasks.length})`}{" "}
                 <i className="bi bi-caret-down-fill"></i>
               </button>
               {isTaskDropdownOpen && (
                 <div className="card custom-dropdown-content">
                   <div className="card-body">
                     <div className="d-flex justify-content-center mb-2">
-                      <button type="button" className="btn btn-primary btn-sm me-2" onClick={handleSelectAll}>
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm me-2"
+                        onClick={handleSelectAll}
+                      >
                         Select All
                       </button>
-                      <button type="button" className="btn btn-primary btn-sm" onClick={handleUnselectAll}>
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        onClick={handleUnselectAll}
+                      >
                         Unselect All
                       </button>
                     </div>
-                    <div className="custom-dropdown-user-list" style={{ maxHeight: "200px", overflowY: "auto" }}>
+                    <div
+                      className="custom-dropdown-user-list"
+                      style={{ maxHeight: "200px", overflowY: "auto" }}
+                    >
                       {tasks.map((task) => (
                         <div key={task._id} className="form-check">
                           <input
@@ -288,7 +338,9 @@ const EditProject = () => {
                             onChange={onInputChange}
                             name="tasks"
                           />
-                          <label className="form-check-label custom-dropdown-label">{task.title}</label>
+                          <label className="form-check-label custom-dropdown-label">
+                            {task.title}
+                          </label>
                         </div>
                       ))}
                     </div>

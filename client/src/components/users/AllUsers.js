@@ -40,23 +40,38 @@ const UserCard = ({ user, onDelete }) => {
               Are you sure you want to delete?
             </p>
             <div className="btn-group d-flex align-items-center">
-              <button className="btn1 btn-danger btn-rounded" onClick={confirmDelete}>
+              <button
+                className="btn1 btn-danger btn-rounded"
+                onClick={confirmDelete}
+              >
                 Delete
               </button>
-              <button className="btn1 btn-secondary btn-rounded ml-2" onClick={cancelDelete}>
+              <button
+                className="btn1 btn-secondary btn-rounded ml-2"
+                onClick={cancelDelete}
+              >
                 Cancel
               </button>
             </div>
           </div>
         ) : (
           <div className="btn-group">
-            <Link className="btn btn-primary btn-rounded" to={`/users/${user._id}`}>
+            <Link
+              className="btn btn-primary btn-rounded"
+              to={`/users/${user._id}`}
+            >
               View
             </Link>
-            <Link className="btn btn-outline-primary btn-rounded" to={`/users/edit/${user._id}`}>
+            <Link
+              className="btn btn-outline-primary btn-rounded"
+              to={`/users/edit/${user._id}`}
+            >
               Edit
             </Link>
-            <button className="btn btn-danger btn-rounded ml-2" onClick={handleDelete}>
+            <button
+              className="btn btn-danger btn-rounded ml-2"
+              onClick={handleDelete}
+            >
               Delete
             </button>
           </div>
@@ -66,7 +81,6 @@ const UserCard = ({ user, onDelete }) => {
     </div>
   );
 };
-
 
 const AllUsers = () => {
   const [users, setUsers] = useState([]);
@@ -84,7 +98,9 @@ const AllUsers = () => {
   useEffect(() => {
     if (searchTerm) {
       setSearchResults(
-        users.filter((user) => user.username.toLowerCase().includes(searchTerm.toLowerCase()))
+        users.filter((user) =>
+          user.username.toLowerCase().includes(searchTerm.toLowerCase())
+        )
       );
     } else {
       setSearchResults([]);

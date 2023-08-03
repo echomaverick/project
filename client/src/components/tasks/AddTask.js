@@ -33,8 +33,7 @@ const AddTask = () => {
     const newErrors = {};
 
     if (!taskNameRegex.test(title)) {
-      newErrors.title =
-        "Task title should only contain letters and spaces.";
+      newErrors.title = "Task title should only contain letters and spaces.";
     } else if (title.trim() !== "" && title[0] !== title[0].toUpperCase()) {
       newErrors.title = "Task title should start with an uppercase letter.";
     }
@@ -42,8 +41,12 @@ const AddTask = () => {
     if (!taskDescriptionRegex.test(description)) {
       newErrors.description =
         "Task description should only contain letters and spaces.";
-    } else if (description.trim() !== "" && description[0] !== description[0].toUpperCase()) {
-      newErrors.description = "Task description should start with an uppercase letter.";
+    } else if (
+      description.trim() !== "" &&
+      description[0] !== description[0].toUpperCase()
+    ) {
+      newErrors.description =
+        "Task description should start with an uppercase letter.";
     }
 
     if (selectedUsers.length === 0) {
@@ -134,9 +137,7 @@ const AddTask = () => {
               onChange={handleTitleChange}
               required
             />
-            {errors.title && (
-              <div className="text-danger">{errors.title}</div>
-            )}
+            {errors.title && <div className="text-danger">{errors.title}</div>}
           </div>
           <div className="form-group mb-3">
             <label htmlFor="description" className="form-label">
@@ -214,9 +215,7 @@ const AddTask = () => {
                 </div>
               )}
             </div>
-            {errors.users && (
-              <div className="text-danger">{errors.users}</div>
-            )}
+            {errors.users && <div className="text-danger">{errors.users}</div>}
           </div>
           <div className="d-flex justify-content-start">
             <button
@@ -226,7 +225,10 @@ const AddTask = () => {
             >
               Add Task
             </button>
-            <button className="btn btn-primary" onClick={() => history.push("/tasks")}>
+            <button
+              className="btn btn-primary"
+              onClick={() => history.push("/tasks")}
+            >
               Cancel
             </button>
           </div>

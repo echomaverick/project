@@ -12,7 +12,7 @@ const EditUser = () => {
     email: "",
     role: "",
   });
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
 
   const { name, surname, username, email, role } = user;
   const onInputChange = (e) => {
@@ -25,11 +25,11 @@ const EditUser = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); 
+    setLoading(true);
 
     try {
       await axios.put(`http://localhost:5000/api/users/${id}`, user);
-      setLoading(false); 
+      setLoading(false);
       history.push("/users");
     } catch (error) {
       setLoading(false);
@@ -104,13 +104,14 @@ const EditUser = () => {
           </div>
           <div className="d-flex justify-content-start">
             <button className="btn btn-primary me-2">Update User</button>
-            <button className="btn btn-primary" onClick={() => history.push("/users")}>
+            <button
+              className="btn btn-primary"
+              onClick={() => history.push("/users")}
+            >
               Cancel
             </button>
           </div>
         </form>
-
-        {/* Loader */}
         {loading && (
           <div className="loader-container">
             <div className="loader"></div>

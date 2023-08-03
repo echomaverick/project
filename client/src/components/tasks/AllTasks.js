@@ -25,34 +25,58 @@ const TaskCard = ({ task, onDelete }) => {
     <div className="card shadow-sm">
       <div className="card-body">
         <div className="task-title">
-          <h5 className="card-title"><strong>Title:</strong> {task.title}</h5>
+          <h5 className="card-title">
+            <strong>Title:</strong> {task.title}
+          </h5>
         </div>
         <div className="task-description">
-          <p className="card-text"><strong>Description:</strong> {task.description}</p>
+          <p className="card-text">
+            <strong>Description:</strong> {task.description}
+          </p>
         </div>
       </div>
       <div className="card-footer d-flex justify-content-between rounded-bottom">
         {showConfirmation ? (
-          <div className="popup bg-white rounded p-3 d-flex flex-column align-items-center justify-content-center" style={{ width: '600px', minHeight: '400px' }}>
-            <p className="confirmation-text" style={{ fontSize: '24px' }}>Are you sure you want to delete?</p>
+          <div
+            className="popup bg-white rounded p-3 d-flex flex-column align-items-center justify-content-center"
+            style={{ width: "600px", minHeight: "400px" }}
+          >
+            <p className="confirmation-text" style={{ fontSize: "24px" }}>
+              Are you sure you want to delete?
+            </p>
             <div className="btn-group d-flex align-items-center">
-              <button className="btn1 btn-danger btn-rounded" onClick={confirmDelete}>
+              <button
+                className="btn1 btn-danger btn-rounded"
+                onClick={confirmDelete}
+              >
                 Delete
               </button>
-              <button className="btn1 btn-secondary btn-rounded ml-2" onClick={cancelDelete}>
+              <button
+                className="btn1 btn-secondary btn-rounded ml-2"
+                onClick={cancelDelete}
+              >
                 Cancel
               </button>
             </div>
           </div>
         ) : (
           <div className="btn-group">
-            <Link className="btn btn-primary btn-rounded" to={`/tasks/${task._id}`}>
+            <Link
+              className="btn btn-primary btn-rounded"
+              to={`/tasks/${task._id}`}
+            >
               View
             </Link>
-            <Link className="btn btn-outline-primary btn-rounded" to={`/tasks/edit/${task._id}`}>
+            <Link
+              className="btn btn-outline-primary btn-rounded"
+              to={`/tasks/edit/${task._id}`}
+            >
               Edit
             </Link>
-            <button className="btn btn-danger btn-rounded ml-2" onClick={handleDelete}>
+            <button
+              className="btn btn-danger btn-rounded ml-2"
+              onClick={handleDelete}
+            >
               Delete
             </button>
           </div>
@@ -78,8 +102,10 @@ const AllTasks = () => {
   useEffect(() => {
     if (searchTerm) {
       setSearchResults(
-        tasks.filter((task) =>
-          task.title && task.title.toLowerCase().includes(searchTerm.toLowerCase())
+        tasks.filter(
+          (task) =>
+            task.title &&
+            task.title.toLowerCase().includes(searchTerm.toLowerCase())
         )
       );
     } else {
@@ -156,18 +182,16 @@ const AllTasks = () => {
                 <SkeletonUserCard />
               </div>
             ))
+          ) : currentTasks.length === 0 ? (
+            <div className="col-md-12 text-center">
+              {searchTerm ? <h3>No tasks found</h3> : null}
+            </div>
           ) : (
-            currentTasks.length === 0 ? (
-              <div className="col-md-12 text-center">
-                {searchTerm ? <h3>No tasks found</h3> : null}
+            currentTasks.map((task) => (
+              <div className="col-md-6 col-lg-4 mb-4" key={task._id}>
+                <TaskCard task={task} onDelete={deleteTask} />
               </div>
-            ) : (
-              currentTasks.map((task) => (
-                <div className="col-md-6 col-lg-4 mb-4" key={task._id}>
-                  <TaskCard task={task} onDelete={deleteTask} />
-                </div>
-              ))
-            )
+            ))
           )}
         </div>
         <Pagination

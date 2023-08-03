@@ -8,7 +8,7 @@ const Projects = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState(null);
-  
+
   const { id } = useParams();
   const objectIdRegex = /^[0-9a-fA-F]{24}$/;
 
