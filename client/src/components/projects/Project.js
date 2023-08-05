@@ -8,7 +8,7 @@ const Projects = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState(null);
-
+  
   const { id } = useParams();
   const objectIdRegex = /^[0-9a-fA-F]{24}$/;
 
@@ -25,12 +25,19 @@ const Projects = () => {
       if (id && objectIdRegex.test(id)) {
         const foundProject = res.data.find((project) => project._id === id);
         setSelectedProject(foundProject);
+      } else {
+        setSelectedProject(null);
       }
     } catch (error) {
       setLoading(false);
       console.error("Error fetching projects:", error);
     }
   };
+
+  // if (!projects) {
+  //   return <Redirect to="/not-found" />;
+  // }
+
 
   return (
     <div className="container py-4">
@@ -47,7 +54,6 @@ const Projects = () => {
               <div className="loader"></div>
             </div>
           ) : selectedProject ? (
-            // Display the selected project
             <div key={selectedProject._id} className="mb-4">
               <div className="card p-3 border-0">
                 <h4>

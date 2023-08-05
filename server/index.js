@@ -5,6 +5,11 @@ const taskRoutes = require('./routes/taskRoutes');
 const roleRoutes = require('./routes/roleRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const searchRoutes = require('./routes/searchRoutes');
+const dotenv = require('dotenv');
+
+dotenv.config();
+const secretKey = process.env.SECRET_KEY;
+const refreshSecretKey = process.env.REFRESH_SECRET_KEY;
 const app = express();
 const cors = require('cors');
 

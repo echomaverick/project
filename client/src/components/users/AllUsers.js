@@ -137,6 +137,7 @@ const AllUsers = () => {
     }
   };
 
+  //calculate the range of users which will be displayed in the page 
   const indexOfLastUser = currentPage * itemsPerPage;
   const indexOfFirstUser = indexOfLastUser - itemsPerPage;
   const currentUsers = searchTerm

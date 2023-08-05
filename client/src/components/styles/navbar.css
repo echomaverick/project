@@ -1,0 +1,28 @@
+.navbar{
+    height: 70px;
+    background-color: white;
+    color:black;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+.list{
+    display: flex;
+    align-items: center;
+    list-style: none;
+}
+.listItem{
+    margin-right: 20px;
+    font-weight: 500;
+    cursor: pointer;
+}
+.avatar{
+    width: 32px;
+    height: 32px;
+    border-radius: 50px;
+    object-fit: cover;
+}
+.logo{
+    font-size: 20px;
+    font-weight: bold;
+}

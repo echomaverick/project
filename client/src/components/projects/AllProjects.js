@@ -173,7 +173,7 @@ const AllProjects = () => {
               </button>
             )}
           </div>
-          <Link to="/projects/add" className="btn btn-primary btn-sm btn-rounded">
+          <Link to="/project/add" className="btn btn-primary btn-sm btn-rounded">
             Add a Project
           </Link>
         </div>

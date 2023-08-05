@@ -24,6 +24,11 @@ import Loader from "../src/components/layout/Loader";
 import NavigationBar from "./components/layout/NavigationBar";
 import NotFound from "../src/components/layout/NotFound";
 import About from "./components/pages/About";
+import Login from "./components/pages/Login";
+import Signup from "./components/pages/Signup";
+import { AuthContext } from "./components/layout/Auth";
+
+
 
 function App(props) {
   const [isLoading, setIsLoading] = useState(true);
@@ -75,6 +80,9 @@ function App(props) {
               <Route exact path="/users/edit/:id" component={EditUser} />
               <Route exact path="/users/:id" component={User} />
 
+
+              <Route exact path="/login" component={Login}/>
+              <Route exact path="/signup" component={Signup}/>
               <Route component={NotFound} />
               <Redirect to="/" />
             </Switch>
