@@ -3,7 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import "../styles/allusers.css";
 import ReactLoading from "react-loading";
-import Pagination from "./Pagination";
+import Pagination from "react-bootstrap/Pagination";
 import SkeletonUserCard from "./SkeletonUserCard";
 
 const UserCard = ({ user, onDelete }) => {
@@ -82,6 +82,166 @@ const UserCard = ({ user, onDelete }) => {
   );
 };
 
+// const AllUsers = () => {
+//   const [users, setUsers] = useState([]);
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const [itemsPerPage] = useState(6);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [searchResults, setSearchResults] = useState([]);
+
+//   useEffect(() => {
+//     loadUsers();
+//   }, [currentPage]);
+
+//   useEffect(() => {
+//     if (searchTerm) {
+//       setSearchResults(
+//         users.filter((user) =>
+//           user.username.toLowerCase().includes(searchTerm.toLowerCase())
+//         )
+//       );
+//     } else {
+//       setSearchResults([]);
+//     }
+//   }, [searchTerm, users]);
+
+//   const loadUsers = async () => {
+//     try {
+//       setLoading(true);
+//       setError(null);
+
+//       const response = await axios.get("http://localhost:5000/api/users");
+//       setUsers(response.data);
+//     } catch (error) {
+//       console.error("Error loading users:", error);
+//       setError("Error loading users. Please try again later.");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const deleteUser = async (id) => {
+//     try {
+//       setLoading(true);
+//       setError(null);
+
+//       await axios.delete(`http://localhost:5000/api/users/${id}`);
+//       setUsers((prevUsers) => prevUsers.filter((user) => user._id !== id));
+//     } catch (error) {
+//       console.error("Error deleting user:", error);
+//       setError("Error deleting user. Please try again later.");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   //calculate the range of users which will be displayed in the page 
+//   const indexOfLastUser = currentPage * itemsPerPage;
+//   const indexOfFirstUser = indexOfLastUser - itemsPerPage;
+//   const currentUsers = searchTerm
+//     ? searchResults.slice(indexOfFirstUser, indexOfLastUser)
+//     : users.slice(indexOfFirstUser, indexOfLastUser);
+
+//   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+//   const handleSearchChange = (e) => {
+//     setSearchTerm(e.target.value);
+//     setCurrentPage(1);
+//   };
+
+//   const handleSearchClear = () => {
+//     setSearchTerm("");
+//   };
+
+//   if (loading) {
+//     return (
+//       <div className="container mt-4">
+//         <div className="py-4">
+//           <div className="d-flex justify-content-between align-items-center">
+//             <h1 className="display-4">All Users</h1>
+//             <Link to="/user/add" className="btn btn-primary btn-rounded">
+//               Add a User
+//             </Link>
+//           </div>
+//           <div className="row mt-4">
+//             {Array.from({ length: itemsPerPage }).map((_, index) => (
+//               <div className="col-md-6 col-lg-4 mb-4" key={index}>
+//                 <SkeletonUserCard />
+//               </div>
+//             ))}
+//           </div>
+//           <Pagination
+//             itemsPerPage={itemsPerPage}
+//             totalItems={users.length}
+//             currentPage={currentPage}
+//             paginate={paginate}
+//           />
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   if (error) {
+//     return (
+//       <div className="container mt-4">
+//         <div className="alert alert-danger" role="alert">
+//           {error}
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="container mt-4">
+//       <div className="py-4">
+//         <div className="d-flex justify-content-between align-items-center">
+//           <h1 className="display-4">All Users</h1>
+//           <div className="search-bar">
+//             <input
+//               type="text"
+//               value={searchTerm}
+//               onChange={handleSearchChange}
+//               placeholder="Search users..."
+//             />
+//             {searchTerm && (
+//               <button className="clear-btn" onClick={handleSearchClear}>
+//                 Clear
+//               </button>
+//             )}
+//           </div>
+//           <Link to="/user/add" className="btn btn-primary btn-rounded">
+//             Add a User
+//           </Link>
+//         </div>
+//         <div className="row mt-4">
+//           {currentUsers.length === 0 ? (
+//             <div className="col-md-12 text-center">
+//               {searchTerm ? <h3>No users found</h3> : null}
+//             </div>
+//           ) : (
+//             currentUsers.map((user) => (
+//               <div className="col-md-6 col-lg-4 mb-4" key={user._id}>
+//                 <UserCard user={user} onDelete={deleteUser} />
+//               </div>
+//             ))
+//           )}
+//         </div>
+//         <Pagination
+//           itemsPerPage={itemsPerPage}
+//           totalItems={searchTerm ? searchResults.length : users.length}
+//           currentPage={currentPage}
+//           paginate={paginate}
+//         />
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AllUsers;
+
+
 const AllUsers = () => {
   const [users, setUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -137,14 +297,23 @@ const AllUsers = () => {
     }
   };
 
-  //calculate the range of users which will be displayed in the page 
+  // Calculate the total number of pages
+  const totalPages = searchTerm
+    ? Math.ceil(searchResults.length / itemsPerPage)
+    : Math.ceil(users.length / itemsPerPage);
+
+  // Define the currentUsers variable
   const indexOfLastUser = currentPage * itemsPerPage;
   const indexOfFirstUser = indexOfLastUser - itemsPerPage;
   const currentUsers = searchTerm
     ? searchResults.slice(indexOfFirstUser, indexOfLastUser)
     : users.slice(indexOfFirstUser, indexOfLastUser);
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const paginate = (pageNumber) => {
+    if (pageNumber > 0 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -172,12 +341,6 @@ const AllUsers = () => {
               </div>
             ))}
           </div>
-          <Pagination
-            itemsPerPage={itemsPerPage}
-            totalItems={users.length}
-            currentPage={currentPage}
-            paginate={paginate}
-          />
         </div>
       </div>
     );
@@ -228,12 +391,41 @@ const AllUsers = () => {
             ))
           )}
         </div>
-        <Pagination
-          itemsPerPage={itemsPerPage}
-          totalItems={searchTerm ? searchResults.length : users.length}
-          currentPage={currentPage}
-          paginate={paginate}
-        />
+        <div className="d-flex justify-content-center mt-3">
+          <Pagination>
+            <Pagination.Prev
+              onClick={() => paginate(currentPage - 1)}
+              disabled={currentPage === 1}
+            />
+            <Pagination.Item onClick={() => paginate(1)} active={currentPage === 1}>
+              1
+            </Pagination.Item>
+            {currentPage > 2 && <Pagination.Ellipsis disabled />}
+            {currentPage > 2 && (
+              <Pagination.Item onClick={() => paginate(currentPage - 1)}>
+                {currentPage - 1}
+              </Pagination.Item>
+            )}
+            {currentPage !== 1 && currentPage !== totalPages && (
+              <Pagination.Item active>{currentPage}</Pagination.Item>
+            )}
+            {currentPage < totalPages - 1 && (
+              <Pagination.Item onClick={() => paginate(currentPage + 1)}>
+                {currentPage + 1}
+              </Pagination.Item>
+            )}
+            {currentPage < totalPages - 2 && <Pagination.Ellipsis disabled />}
+            {currentPage < totalPages && (
+              <Pagination.Item onClick={() => paginate(totalPages)}>
+                {totalPages}
+              </Pagination.Item>
+            )}
+            <Pagination.Next
+              onClick={() => paginate(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            />
+          </Pagination>
+        </div>
       </div>
     </div>
   );

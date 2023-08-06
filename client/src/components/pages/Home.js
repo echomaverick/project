@@ -182,11 +182,12 @@ const Home = () => {
     padding: "15px",
     width: "300px",
     fontSize: "18px",
+    marginRight: "-20px"
   };
 
   const buttonStyle = {
     padding: "15px 30px",
-    borderRadius: "10px",
+    borderRadius: "0 10px 10px 0",
     backgroundColor: "#0078d4",
     color: "#fff",
     textDecoration: "none",
@@ -199,7 +200,7 @@ const Home = () => {
   return (
     <div style={containerStyle}>
       <div style={overlayStyle}></div>
-      <h1 style={headerStyle}>Welcome to Lab</h1>
+      <h1 style={headerStyle}>Welcome to Proventus Nexus</h1>
       <p style={subheaderStyle}>Discover amazing things.</p>
       <div style={inputContainerStyle}>
         <input

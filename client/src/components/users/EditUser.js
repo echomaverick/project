@@ -50,7 +50,7 @@ const EditUser = () => {
   return (
     <div className="container">
       <div className="w-75 mx-auto shadow p-5">
-        <h2 className="text-center mb-4">Edit A User</h2>
+        <h2 className="text-center mb-4">Update your profile info</h2>
         <form onSubmit={onSubmit}>
           <div className="form-group mb-3">
             <input
@@ -103,10 +103,10 @@ const EditUser = () => {
             />
           </div>
           <div className="d-flex justify-content-start">
-            <button className="btn btn-primary me-2">Update User</button>
+            <button className="btn btn-primary me-2">Update info</button>
             <button
               className="btn btn-primary"
-              onClick={() => history.push("/users")}
+              onClick={() => history.push("/")}
             >
               Cancel
             </button>

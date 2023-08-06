@@ -1,21 +1,75 @@
-import React, { useContext } from "react";
-import { Container, Nav, Navbar, NavDropdown, Button } from "react-bootstrap";
-import { Link, useHistory } from "react-router-dom"; // Import useHistory
+import React, { useContext, useEffect, useState } from "react";
+import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
+import { Link, useHistory } from "react-router-dom";
+import axios from "axios";
 import { AuthContext } from "../layout/Auth";
 
 const NavigationBar = () => {
   const { user, logout } = useContext(AuthContext);
-  const history = useHistory(); // Get the history object
+  const history = useHistory();
+  const [loading, setLoading] = useState(true);
 
   const handleLogout = () => {
-    logout(); // Call the logout function from AuthContext
-    history.push("/"); // Redirect to the home screen after logging out
+    logout();
+    history.push("/");
   };
 
+  const handleUpdateProfile = async () => {
+    console.log("User ID:", user._id);
+
+    try {
+      const apiUrl = `http://localhost:5000/api/users/${user._id}`;
+
+      const response = await axios.get(apiUrl);
+      if (response.status === 200) {
+        history.push({
+          pathname: `/users/edit/${user._id}`,
+          state: { userData: response.data },
+        });
+      } else {
+        console.error("Failed to fetch user data.");
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+
+  useEffect(() => {
+    // Fetch user data if the user is logged in
+    const fetchUserData = async () => {
+      if (user) {
+        try {
+          const apiUrl = `http://localhost:5000/api/users/${user._id}`;
+          const response = await axios.get(apiUrl);
+          if (response.status === 200) {
+            setLoading(false);
+          } else {
+            console.error("Failed to fetch user data.");
+            setLoading(false);
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchUserData();
+  }, [user]);
+
+  console.log("User data:", user);
+
   return (
-    <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary" sticky="top">
+    <Navbar
+      collapseOnSelect
+      expand="lg"
+      className="bg-body-tertiary"
+      sticky="top"
+    >
       <Container>
-        <Navbar.Brand href="/">Lab</Navbar.Brand>
+        <Navbar.Brand as={Link} to="/">
+          Proventus Nexus
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto">
@@ -25,7 +79,28 @@ const NavigationBar = () => {
             <Nav.Link as={Link} to="/about">
               About
             </Nav.Link>
-            {!user && (
+          </Nav>
+          <Nav className="ms-auto">
+            {user && (
+              <NavDropdown
+                title={`Welcome, ${user.username}`}
+                id="user-dropdown"
+              >
+                <NavDropdown.Item as={Link} to="/projects">
+                  Projects
+                </NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/tasks">
+                  Tasks
+                </NavDropdown.Item>
+                <NavDropdown.Item onClick={handleUpdateProfile}>
+                  Update your profile
+                </NavDropdown.Item>
+                <NavDropdown.Item onClick={handleLogout}>
+                  Logout
+                </NavDropdown.Item>
+              </NavDropdown>
+            )}
+            {!user ? (
               <>
                 <Nav.Link as={Link} to="/login">
                   Login
@@ -34,21 +109,8 @@ const NavigationBar = () => {
                   Signup
                 </Nav.Link>
               </>
-            )}
+            ) : null}
           </Nav>
-          {user && (
-            <Nav className="ms-auto">
-              <NavDropdown title={`Welcome, ${user.username}`} id="user-dropdown">
-                <NavDropdown.Item as={Link} to="/projects">
-                  Projects
-                </NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/tasks">
-                  Tasks
-                </NavDropdown.Item>
-                <NavDropdown.Item onClick={handleLogout}>Logout</NavDropdown.Item> {/* Use handleLogout */}
-              </NavDropdown>
-            </Nav>
-          )}
         </Navbar.Collapse>
       </Container>
     </Navbar>

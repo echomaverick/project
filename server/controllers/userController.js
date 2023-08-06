@@ -120,25 +120,33 @@ const loginUser = async (req, res) => {
   try {
     const { username, password } = req.body;
     if (!username || !password) {
-      return res.status(404).json({ error: 'Username and password are required' });
+      return res.status(404).json({ error: "Username and password are required" });
     }
     const user = await User.findOne({ username });
     if (!user) {
-      return res.status(404).json({ error: 'Invalid username' });
+      return res.status(404).json({ error: "Invalid username" });
     }
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(404).json({ error: 'Invalid password' });
+      return res.status(404).json({ error: "Invalid password" });
     }
-    const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY, { expiresIn: '5h' });
-    const refreshToken = jwt.sign({ userId: user._id }, process.env.REFRESH_SECRET_KEY, { expiresIn: '30d' });
-    res.cookie('refreshToken', refreshToken, { httpOnly: true, maxAge: 30 * 24 * 60 * 60 * 1000 }); 
+
+    // Include the username in the token payload
+    const token = jwt.sign(
+      { userId: user._id, username: user.username }, // Include the username field
+      process.env.SECRET_KEY,
+      { expiresIn: "5h" }
+    );
+
+    const refreshToken = jwt.sign({ userId: user._id }, process.env.REFRESH_SECRET_KEY, { expiresIn: "30d" });
+    res.cookie("refreshToken", refreshToken, { httpOnly: true, maxAge: 30 * 24 * 60 * 60 * 1000 });
     res.json({ token });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: 'An error occurred' });
+    res.status(500).json({ error: "An error occurred" });
   }
 };
+
 
 
 //refreshToken
