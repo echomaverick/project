@@ -15,7 +15,7 @@ const NavigationBar = () => {
   return (
     <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary" sticky="top">
       <Container>
-        <Navbar.Brand href="/">Proventus Nexus</Navbar.Brand>
+        <Navbar.Brand href="/">Lab</Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto">
