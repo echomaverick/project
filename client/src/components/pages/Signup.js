@@ -1,117 +1,7 @@
-// // src/components/auth/Signup.js
-// import React, { useState } from "react";
-// import axios from "axios";
-// import { Container, Form, Button, Alert } from "react-bootstrap";
-
-// const Signup = () => {
-//   const [name, setName] = useState("");
-//   const [surname, setSurname] = useState("");
-//   const [username, setUsername] = useState("");
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-//   const [successMessage, setSuccessMessage] = useState("");
-//   const [errorMessage, setErrorMessage] = useState("");
-
-//   const handleSignup = async (e) => {
-//     e.preventDefault();
-
-//     try {
-//       const response = await axios.post("http://localhost:5000/api/users/register", {
-//         name,
-//         surname,
-//         username,
-//         email,
-//         password,
-//       });
-
-//       // Show success message
-//       setSuccessMessage("Account successfully created! Redirecting to login...");
-
-//       // Clear error message if any
-//       setErrorMessage("");
-
-//       // Redirect to the login page after 3 seconds
-//       setTimeout(() => {
-//         window.location.href = "/login";
-//       }, 3000);
-//     } catch (error) {
-//       // Handle signup error and display error message
-//       if (error.response && error.response.data && error.response.data.error) {
-//         console.log(error);
-//         setErrorMessage(error.response.data.error);
-//       } else {
-//         console.log(error);
-//         setErrorMessage("An error occurred during signup. Please try again later.");
-//       }
-//     }
-//   };
-
-//   return (
-//     <Container>
-//       <h2>Signup</h2>
-//       {successMessage && <Alert variant="success">{successMessage}</Alert>}
-//       <Form onSubmit={handleSignup}>
-//         <Form.Group controlId="name">
-//           <Form.Label>Name:</Form.Label>
-//           <Form.Control
-//             type="text"
-//             value={name}
-//             onChange={(e) => setName(e.target.value)}
-//             required
-//           />
-//         </Form.Group>
-//         <Form.Group controlId="surname">
-//           <Form.Label>Surname:</Form.Label>
-//           <Form.Control
-//             type="text"
-//             value={surname}
-//             onChange={(e) => setSurname(e.target.value)}
-//             required
-//           />
-//         </Form.Group>
-//         <Form.Group controlId="username">
-//           <Form.Label>Username:</Form.Label>
-//           <Form.Control
-//             type="text"
-//             value={username}
-//             onChange={(e) => setUsername(e.target.value)}
-//             required
-//           />
-//         </Form.Group>
-//         <Form.Group controlId="email">
-//           <Form.Label>Email:</Form.Label>
-//           <Form.Control
-//             type="email"
-//             value={email}
-//             onChange={(e) => setEmail(e.target.value)}
-//             required
-//           />
-//         </Form.Group>
-//         <Form.Group controlId="password">
-//           <Form.Label>Password:</Form.Label>
-//           <Form.Control
-//             type="password"
-//             value={password}
-//             onChange={(e) => setPassword(e.target.value)}
-//             required
-//           />
-//         </Form.Group>
-//         {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
-//         <Button type="submit">Signup</Button>
-//       </Form>
-//     </Container>
-//   );
-// };
-
-// export default Signup;
-
-
-
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Container, Form, Button, Alert } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
+import "../styles/popup.css";
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -119,41 +9,50 @@ const Signup = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [formSubmitting, setFormSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
   const [existingEmails, setExistingEmails] = useState([]);
   const [existingUsernames, setExistingUsernames] = useState([]);
-  const [roles, setRoles] = useState([]);
-  const [errors, setErrors] = useState({});
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const history = useHistory();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const usersResponse = await axios.get("http://localhost:5000/api/users");
+        const usersResponse = await axios.get(
+          "http://localhost:5000/api/users"
+        );
         const users = usersResponse.data;
         setExistingEmails(users.map((user) => user.email.toLowerCase()));
         setExistingUsernames(users.map((user) => user.username.toLowerCase()));
-
-        const rolesResponse = await axios.get("http://localhost:5000/api/roles");
-        setRoles(rolesResponse.data);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching users:", error);
       }
     };
     fetchData();
   }, []);
 
-  const handleSignup = async (e) => {
+  const areAllFieldsFilled = () => {
+    return (
+      name.trim() !== "" &&
+      surname.trim() !== "" &&
+      username.trim() !== "" &&
+      email.trim() !== "" &&
+      password.trim() !== "" &&
+      confirmPassword.trim() !== ""
+    );
+  };
+
+  const isPasswordValid = () => {
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+    return passwordRegex.test(password);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate the form data and show errors if any
     const newErrors = {};
-
-    // Check if all fields are filled
-    if (name.trim() === "" || surname.trim() === "" || username.trim() === "" || email.trim() === "" || password.trim() === "") {
-      newErrors.allFields = "Please fill in all the fields.";
-    }
 
     const nameSurnameRegex = /^[A-Z][A-Za-z]{2,}$/;
     if (!nameSurnameRegex.test(name)) {
@@ -179,21 +78,34 @@ const Signup = () => {
       newErrors.username = "This username already exists in the database.";
     }
 
-    setErrorMessage("");
-    setSuccessMessage("");
+    if (!isPasswordValid()) {
+      newErrors.password =
+        "Password should be 8 characters long and contain at least one letter, one symbol, and one number.";
+    } else if (password !== confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match.";
+    }
+
     setErrors(newErrors);
 
+    //controls if there are any validation errors 
     if (Object.keys(newErrors).length > 0) {
       return;
     }
 
+    setFormSubmitting(true);
+
     try {
-      const adminRole = roles.find((role) => role.name.toLowerCase() === "admin");
+      const roleResponse = await axios.get("http://localhost:5000/api/roles");
+      const existingRoles = roleResponse.data;
+      const adminRole = existingRoles.find(
+        (role) => role.name.toLowerCase() === "user"
+      );
 
       if (!adminRole) {
         setErrors({
-          adminRole: "The 'admin' role does not exist in the database.",
+          adminRole: "The 'user' role does not exist in the database.",
         });
+        setFormSubmitting(false);
         return;
       }
 
@@ -210,94 +122,196 @@ const Signup = () => {
         role: roleData,
       };
 
-      // Send the user data to the backend for signup
-      const response = await axios.post("http://localhost:5000/api/users/register", userData);
+      const response = await axios.post(
+        "http://localhost:5000/api/users/register",
+        userData
+      );
+      console.log("User added successfully:", response.data);
+      setFormSubmitting(false);
+      setShowSuccessModal(true);
 
-      // Show success message
-      setSuccessMessage("Account successfully created! Redirecting to login...");
-
-      // Clear error message if any
-      setErrorMessage("");
-
-      // Redirect to the login page after 3 seconds
-      setTimeout(() => {
-        history.push("/login");
-      }, 3000);
+      history.push("/login");
     } catch (error) {
-      // Handle signup error and display error message
-      if (error.response && error.response.data && error.response.data.error) {
-        console.log(error);
-        setErrorMessage(error.response.data.error);
-      } else {
-        console.log(error);
-        setErrorMessage("An error occurred during signup. Please try again later.");
-      }
+      setFormSubmitting(false);
+      console.error("Error adding user:", error);
     }
   };
 
+  const handleNameChange = (e) => {
+    setName(e.target.value);
+    clearError("name");
+  };
+
+  const handleSurnameChange = (e) => {
+    setSurname(e.target.value);
+    clearError("surname");
+  };
+
+  const handleUsernameChange = (e) => {
+    setUsername(e.target.value);
+    clearError("username");
+  };
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+    clearError("email");
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+    clearError("password");
+  };
+
+  const handleConfirmPasswordChange = (e) => {
+    setConfirmPassword(e.target.value);
+    clearError("confirmPassword");
+  };
+
+  const clearError = (fieldName) => {
+    setErrors((prevErrors) => ({ ...prevErrors, [fieldName]: "" }));
+  };
+
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+  };
+
   return (
-    <Container>
-      <h2>Signup</h2>
-      {successMessage && <Alert variant="success">{successMessage}</Alert>}
-      {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
-      <Form onSubmit={handleSignup}>
-        <Form.Group controlId="name">
-          <Form.Label>Name:</Form.Label>
-          <Form.Control
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-          {errors.name && <div className="text-danger">{errors.name}</div>}
-        </Form.Group>
-        <Form.Group controlId="surname">
-          <Form.Label>Surname:</Form.Label>
-          <Form.Control
-            type="text"
-            value={surname}
-            onChange={(e) => setSurname(e.target.value)}
-            required
-          />
-          {errors.surname && <div className="text-danger">{errors.surname}</div>}
-        </Form.Group>
-        <Form.Group controlId="username">
-          <Form.Label>Username:</Form.Label>
-          <Form.Control
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-          {errors.username && <div className="text-danger">{errors.username}</div>}
-        </Form.Group>
-        <Form.Group controlId="email">
-          <Form.Label>Email:</Form.Label>
-          <Form.Control
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          {errors.email && <div className="text-danger">{errors.email}</div>}
-        </Form.Group>
-        <Form.Group controlId="password">
-          <Form.Label>Password:</Form.Label>
-          <Form.Control
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          {errors.allFields && <div className="text-danger">{errors.allFields}</div>}
-        </Form.Group>
-        <Button type="submit">Signup</Button>
-      </Form>
-    </Container>
+    <div className="container">
+      <div className="row justify-content-center">
+        <div className="col-md-8 col-lg-6">
+          <div className="shadow p-5">
+            <h2 className="text-center mb-4">Create an account</h2>
+            {errors.adminRole && (
+              <div className="alert alert-danger">{errors.adminRole}</div>
+            )}
+            <form onSubmit={handleSubmit}>
+              <div className="form-group mb-3">
+                <label htmlFor="name" className="form-label">
+                  Name:
+                </label>
+                <input
+                  type="text"
+                  className="form-control form-control-lg"
+                  id="name"
+                  placeholder="Enter Your Name"
+                  value={name}
+                  onChange={handleNameChange}
+                />
+                {errors.name && (
+                  <div className="text-danger">{errors.name}</div>
+                )}
+              </div>
+              <div className="form-group mb-3">
+                <label htmlFor="surname" className="form-label">
+                  Surname:
+                </label>
+                <input
+                  type="text"
+                  className="form-control form-control-lg"
+                  id="surname"
+                  placeholder="Enter Your Surname"
+                  value={surname}
+                  onChange={handleSurnameChange}
+                />
+                {errors.surname && (
+                  <div className="text-danger">{errors.surname}</div>
+                )}
+              </div>
+              <div className="form-group mb-3">
+                <label htmlFor="username" className="form-label">
+                  Username:
+                </label>
+                <input
+                  type="text"
+                  className="form-control form-control-lg"
+                  id="username"
+                  placeholder="Enter Your Username"
+                  value={username}
+                  onChange={handleUsernameChange}
+                />
+                {errors.username && (
+                  <div className="text-danger">{errors.username}</div>
+                )}
+              </div>
+              <div className="form-group mb-3">
+                <label htmlFor="email" className="form-label">
+                  E-mail Address:
+                </label>
+                <input
+                  type="email"
+                  className="form-control form-control-lg"
+                  id="email"
+                  placeholder="Enter Your E-mail Address"
+                  value={email}
+                  onChange={handleEmailChange}
+                />
+                {errors.email && (
+                  <div className="text-danger">{errors.email}</div>
+                )}
+              </div>
+              <div className="form-group mb-3">
+                <label htmlFor="password" className="form-label">
+                  Password:
+                </label>
+                <input
+                  type="password"
+                  className="form-control form-control-lg"
+                  id="password"
+                  placeholder="Enter Your Password"
+                  value={password}
+                  onChange={handlePasswordChange}
+                />
+                {errors.password && (
+                  <div className="text-danger">{errors.password}</div>
+                )}
+              </div>
+              <div className="form-group mb-3">
+                <label htmlFor="confirmPassword" className="form-label">
+                  Confirm Password:
+                </label>
+                <input
+                  type="password"
+                  className="form-control form-control-lg"
+                  id="confirmPassword"
+                  placeholder="Confirm Your Password"
+                  value={confirmPassword}
+                  onChange={handleConfirmPasswordChange}
+                />
+                {errors.confirmPassword && (
+                  <div className="text-danger">{errors.confirmPassword}</div>
+                )}
+              </div>
+              <div className="d-flex justify-content-start">
+                <button
+                  type="submit"
+                  className="btn btn-primary me-2 btn-sm"
+                  disabled={!areAllFieldsFilled() || formSubmitting}
+                >
+                  Create account
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm"
+                  onClick={() => history.goBack()}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      {showSuccessModal && (
+        <div className="popup">
+          <div className="popup-shadow">
+            <h3>User Created</h3>
+            <p>User created successfully!</p>
+            <button onClick={handleCloseSuccessModal}>Close</button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
 export default Signup;
-
-
-

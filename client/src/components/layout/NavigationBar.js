@@ -8,6 +8,9 @@ const NavigationBar = () => {
   const { user, logout } = useContext(AuthContext);
   const history = useHistory();
   const [loading, setLoading] = useState(true);
+  const [userTasks, setUserTasks] = useState([]);
+  const [userProjects, setUserProjects] = useState([]);
+
 
   const handleLogout = () => {
     logout();
@@ -34,8 +37,9 @@ const NavigationBar = () => {
     }
   };
 
+ 
+
   useEffect(() => {
-    // Fetch user data if the user is logged in
     const fetchUserData = async () => {
       if (user) {
         try {
@@ -50,6 +54,28 @@ const NavigationBar = () => {
         } catch (error) {
           console.error("Error fetching user data:", error);
           setLoading(false);
+        }
+      }
+    };
+
+    const fetchUserTasks = async () => {
+      if (user) {
+        try {
+          const response = await axios.get(`http://localhost:5000/api/tasks/user/${user.username}`);
+          setUserTasks(response.data);
+        } catch (error) {
+          console.error("Error fetching user tasks:", error);
+        }
+      }
+    };
+
+    const fetchUserProjects = async () => {
+      if (user) {
+        try {
+          const response = await axios.get(`http://localhost:5000/api/projects/user/${user.username}`);
+          setUserProjects(response.data);
+        } catch (error) {
+          console.error("Error fetching user projects:", error);
         }
       }
     };
@@ -86,11 +112,11 @@ const NavigationBar = () => {
                 title={`Welcome, ${user.username}`}
                 id="user-dropdown"
               >
-                <NavDropdown.Item as={Link} to="/projects">
-                  Projects
-                </NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/tasks">
+                <NavDropdown.Item as={Link} to={`/tasks/user/${user.username}`}>
                   Tasks
+                </NavDropdown.Item>
+                <NavDropdown.Item as={Link} to={`/projects/user/${user.username}`}>
+                  Projects
                 </NavDropdown.Item>
                 <NavDropdown.Item onClick={handleUpdateProfile}>
                   Update your profile
@@ -105,7 +131,7 @@ const NavigationBar = () => {
                 <Nav.Link as={Link} to="/login">
                   Login
                 </Nav.Link>
-                <Nav.Link as={Link} to="/user/add">
+                <Nav.Link as={Link} to="/signup">
                   Signup
                 </Nav.Link>
               </>

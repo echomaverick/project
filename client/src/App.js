@@ -8,6 +8,7 @@ import {
   Route,
   Switch,
   withRouter,
+  Link,
   Redirect,
 } from "react-router-dom";
 import EditUser from "./components/users/EditUser";
@@ -27,6 +28,10 @@ import About from "./components/pages/About";
 import Login from "./components/pages/Login";
 import Signup from "./components/pages/Signup";
 import { AuthContext } from "./components/layout/Auth";
+import UserTasks from "./components/tasks/UserTask";
+import AddUserTask from "./components/tasks/AddUserTask";
+import AddUserProject from "./components/projects/AddUserProject";
+import UserProject from "./components/projects/UserProject";
 
 
 
@@ -62,12 +67,16 @@ function App(props) {
               <Route exact path="/" component={Home} />
               <Route exact path="/about" component={About} />
               {/* task routes */}
+              <Route exact path="/usertask/add" component={AddUserTask}/>
+              <Route exact path="/tasks/user/:username" component={UserTasks} />
               <Route exact path="/tasks/:id" component={Task} />
               <Route exact path="/tasks" component={AllTasks} />
               <Route exact path="/task/add" component={AddTask} />
               <Route exact path="/tasks/edit/:id" component={EditTask} />
 
               {/* project routes*/}
+              <Route exact path="/userproject/add" component={AddUserProject}/>
+              <Route exact path="/projects/user/:username" component={UserProject}/>
               <Route exact path="/projects/:id" component={Projects} />
               <Route exact path="/projects" component={AllProjects} />
               <Route exact path="/projects/edit/:id" component={EditProject} />
@@ -94,6 +103,7 @@ function App(props) {
 }
 
 export default App;
+
 
 
 

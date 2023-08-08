@@ -115,6 +115,8 @@ const createUser = async (req, res) => {
   }
 };
 
+
+
 //login user
 const loginUser = async (req, res) => {
   try {
@@ -131,9 +133,8 @@ const loginUser = async (req, res) => {
       return res.status(404).json({ error: "Invalid password" });
     }
 
-    // Include the username in the token payload
     const token = jwt.sign(
-      { userId: user._id, username: user.username }, // Include the username field
+      { userId: user._id, username: user.username }, 
       process.env.SECRET_KEY,
       { expiresIn: "5h" }
     );

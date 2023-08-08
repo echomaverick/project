@@ -418,7 +418,6 @@ const AddUser = () => {
       setFormSubmitting(false);
       setShowSuccessModal(true);
 
-      // Redirect to the login page after successful user creation
       history.push("/login");
     } catch (error) {
       setFormSubmitting(false);
@@ -469,7 +468,7 @@ const AddUser = () => {
       <div className="row justify-content-center">
         <div className="col-md-8 col-lg-6">
           <div className="shadow p-5">
-            <h2 className="text-center mb-4">Add User</h2>
+            <h2 className="text-center mb-4">Add user</h2>
             {errors.adminRole && (
               <div className="alert alert-danger">{errors.adminRole}</div>
             )}
@@ -576,12 +575,12 @@ const AddUser = () => {
                   className="btn btn-primary me-2 btn-sm"
                   disabled={!areAllFieldsFilled() || formSubmitting}
                 >
-                  Add User
+                  Add user
                 </button>
                 <button
                   type="button"
                   className="btn btn-primary btn-sm"
-                  onClick={() => history.push("/users")}
+                  onClick={() => history.goBack()}
                 >
                   Cancel
                 </button>

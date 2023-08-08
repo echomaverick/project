@@ -205,23 +205,24 @@ const updateProject = async (req, res) => {
 };
 
 
+//project by username
+const getProjectByUserUsername = async(req,res) => {
+  try{
+    const username = req.params.username;
+    const user = await User.findOne({username});
+    if(!user){
+      return res.status(404).json({error: 'User not found'});
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    const projects = await Project.find({users: user._id})
+    .populate("users", "name surname username email")
+    .pupulate("tasks", "title description");
+    res.status(200).json(projects);
+  }catch(error){
+    console.log(error);
+    res.status(500).json({error: "An error occurred"});
+  }
+};
 
 
 //delete project
@@ -262,4 +263,5 @@ module.exports = {
   getProjectById,
   updateProject,
   deleteProject,
+  getProjectByUserUsername
 };

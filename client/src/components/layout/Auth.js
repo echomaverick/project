@@ -76,13 +76,14 @@
 import React, { createContext, useState, useEffect } from "react";
 import jwt_decode from "jwt-decode";
 
+// will be used to share authentication related data across components
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
+  //it is used for decoding the token and to extract successfully the username role and _id of the user
   useEffect(() => {
-    // Check for the token in local storage on component mount
     const accessToken = localStorage.getItem("accessToken");
     if (accessToken) {
       try {
@@ -94,13 +95,12 @@ const AuthProvider = ({ children }) => {
         setUser(null);
       }
     } else {
-      // If there's no token in local storage, set the user to null
       setUser(null);
     }
   }, []);
 
+  //same thing as the useEffect it tries to decode the token and extract the user data username, _id and role
   const login = (token) => {
-    // Save the token in local storage
     localStorage.setItem("accessToken", token);
 
     try {
@@ -114,7 +114,6 @@ const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    // Clear the token from local storage
     localStorage.removeItem("accessToken");
     setUser(null);
   };
@@ -126,6 +125,6 @@ const AuthProvider = ({ children }) => {
   );
 };
 
-export { AuthContext, AuthProvider }; // Remove "login" from here
+export { AuthContext, AuthProvider };
 
 

@@ -27,7 +27,7 @@ exports.subscribeEmail = async(req,res) => {
             html: `
               <div style="text-align: center; font-family: Poppins, sans-serif;">
                 <h1 style="font-size: 24px;">Welcome to Proventus Nexus</h1>
-                <img src="https://ibb.co/MRGSPYw" alt="Proventus Nexus Image" style="width: 200px; height: auto; margin-top: 20px;">
+                <a href="https://ibb.co/MRGSPYw"><img src="https://i.ibb.co/MRGSPYw/logo.jpg" alt="logo" border="0" /></a>
                 <p style="font-size: 16px;">
                   Thanks for subscribing to our newsletter. 
                   You’ll be able to get the latest news, promotions and offers.
@@ -41,13 +41,9 @@ exports.subscribeEmail = async(req,res) => {
                   You are receiving this email because you subscribed to Proventus Nexus newsletter.
                 </p>
           
-                <p style="font-size: 12px;">
-                  Interested in getting the news delivered to your inbox? See all of our newsletters.
-                </p>
-          
-                <p style="font-size: 12px;">
-                  Create Proventus Nexus Account | Download the App 
-                </p>
+                <a style="font-size: 12px;" href="http://localhost:3000/signup">
+                  Create Proventus Nexus Account 
+                </a>
           
                 <p style="font-size: 10px;">
                   ® © 2022 Proventus Nexus, Inc. All Rights Reserved. 
