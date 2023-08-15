@@ -1,13 +1,12 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const projectController = require('../controllers/projectController');
+const projectController = require("../controllers/projectController");
 
-router.post('/', projectController.createProject);
-router.get('/', projectController.getAllProjects);
-router.get('/:id', projectController.getProjectById);
-router.put('/:id', projectController.updateProject);
-router.delete('/:id', projectController.deleteProject);
-router.get('/user/:username', projectController.getProjectByUserUsername);
-
+router.post("/", projectController.createProject);
+router.get("/", projectController.getAllProjects);
+router.get("/:id", projectController.getProjectById);
+router.put("/:id", projectController.updateProject);
+router.delete("/:id", projectController.deleteProject);
+router.get("/user/:username", projectController.getProjectByUserUsername);
 
 module.exports = router;

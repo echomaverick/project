@@ -3,7 +3,6 @@ const Task = require("../models/taskModel");
 const mongoose = require("mongoose");
 const User = require("../models/userModel");
 
-
 //create a new project
 const createProject = async (req, res) => {
   try {
@@ -18,28 +17,25 @@ const createProject = async (req, res) => {
 
     const nameRegex = /^[A-Za-z\s]+$/;
     if (!nameRegex.test(name)) {
-      return res
-        .status(404)
-        .json({
-          error:
-            "Invalid name format! Name should only contain letters and spaces.",
-        });
+      return res.status(404).json({
+        error:
+          "Invalid name format! Name should only contain letters and spaces.",
+      });
     }
 
     const descriptionRegex = /^[A-Za-z\s]+$/;
     if (!descriptionRegex.test(description)) {
-      return res
-        .status(404)
-        .json({
-          error:
-            "Invalid description format! Description should only contain letters and spaces.",
-        });
+      return res.status(404).json({
+        error:
+          "Invalid description format! Description should only contain letters and spaces.",
+      });
     }
 
     const [existingUsers, existingTasks] = await Promise.all([
       User.find({ _id: { $in: users } }),
       tasks ? Task.find({ _id: { $in: tasks } }) : [],
     ]);
+    console.log("Existing Users:", existingUsers);
 
     if (users.length !== existingUsers.length) {
       return res
@@ -81,7 +77,6 @@ const createProject = async (req, res) => {
   }
 };
 
-
 //get all projects
 const getAllProjects = async (req, res) => {
   try {
@@ -101,7 +96,6 @@ const getAllProjects = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
 
 //get project by ID
 const getProjectById = async (req, res) => {
@@ -128,9 +122,6 @@ const getProjectById = async (req, res) => {
   }
 };
 
-
-
-
 //update project
 const updateProject = async (req, res) => {
   try {
@@ -155,47 +146,67 @@ const updateProject = async (req, res) => {
     const nameRegex = /^[A-Za-z\s]+$/;
     if (!nameRegex.test(name)) {
       return res.status(400).json({
-        error: "Invalid name format! Name should only contain letters and spaces.",
+        error:
+          "Invalid name format! Name should only contain letters and spaces.",
       });
     }
 
     const descriptionRegex = /^[A-Za-z\s]+$/;
     if (!descriptionRegex.test(description)) {
       return res.status(400).json({
-        error: "Invalid description format! Description should only contain letters and spaces.",
+        error:
+          "Invalid description format! Description should only contain letters and spaces.",
       });
     }
 
-    if (!Array.isArray(users) || !users.every((id) => mongoose.Types.ObjectId.isValid(id))) {
-      return res.status(400).json({ error: "Invalid 'users' field. It should be an array of valid ObjectId." });
+    if (
+      !Array.isArray(users) ||
+      !users.every((id) => mongoose.Types.ObjectId.isValid(id))
+    ) {
+      return res
+        .status(400)
+        .json({
+          error:
+            "Invalid 'users' field. It should be an array of valid ObjectId.",
+        });
     }
 
-    if (!Array.isArray(tasks) || !tasks.every((id) => mongoose.Types.ObjectId.isValid(id))) {
-      return res.status(400).json({ error: "Invalid 'tasks' field. It should be an array of valid ObjectId." });
+    if (
+      !Array.isArray(tasks) ||
+      !tasks.every((id) => mongoose.Types.ObjectId.isValid(id))
+    ) {
+      return res
+        .status(400)
+        .json({
+          error:
+            "Invalid 'tasks' field. It should be an array of valid ObjectId.",
+        });
     }
 
-    // Update the project data
     project.name = name;
     project.description = description;
 
-    // Add new tasks to the existing tasks array
     project.tasks.push(...tasks);
 
-    // Add new users to the existing users array
     project.users.push(...users);
 
     await project.save();
+    await Task.updateMany(
+      { _id: { $in: tasks } },
+      { $addToSet: { projects: id } }
+    );
 
-    // Update the tasks with the project ID
-    await Task.updateMany({ _id: { $in: tasks } }, { $addToSet: { projects: id } });
+    await User.updateMany(
+      { _id: { $in: users } },
+      { $addToSet: { projects: id } }
+    );
 
-    // Update the users with the project ID
-    await User.updateMany({ _id: { $in: users } }, { $addToSet: { projects: id } });
-
-    const populatedProject = await Project.findById(id).populate({
-      path: "users",
-      select: "id name surname email username",
-    }).exec();
+    const populatedProject = await Project.findById(id)
+      .populate({
+        path: "users",
+        select: "id name surname email username",
+      })
+      .exec();
 
     res.status(200).json(populatedProject);
   } catch (error) {
@@ -204,31 +215,30 @@ const updateProject = async (req, res) => {
   }
 };
 
-
 //project by username
-const getProjectByUserUsername = async(req,res) => {
-  try{
+const getProjectByUserUsername = async (req, res) => {
+  try {
     const username = req.params.username;
-    const user = await User.findOne({username});
-    if(!user){
-      return res.status(404).json({error: 'User not found'});
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
     }
 
-    const projects = await Project.find({users: user._id})
-    .populate("users", "name surname username email")
-    .pupulate("tasks", "title description");
+    const projects = await Project.find({ users: user._id })
+      .populate("users", "name surname username email")
+      .populate("tasks", "title description");
     res.status(200).json(projects);
-  }catch(error){
+  } catch (error) {
     console.log(error);
-    res.status(500).json({error: "An error occurred"});
+    res.status(500).json({ error: "An error occurred" });
   }
 };
 
-
 //delete project
+
 const deleteProject = async (req, res) => {
   try {
-    const { projectId } = req.params;
+    const projectId = req.params.id; // Use req.params.id to access the project ID
     console.log("Received project ID for deletion:", projectId);
 
     const project = await Project.findById(projectId);
@@ -256,12 +266,11 @@ const deleteProject = async (req, res) => {
   }
 };
 
-
 module.exports = {
   createProject,
   getAllProjects,
   getProjectById,
   updateProject,
   deleteProject,
-  getProjectByUserUsername
+  getProjectByUserUsername,
 };

@@ -12,7 +12,6 @@ const User = () => {
     email: "",
     projects: [],
     tasks: [],
-
   });
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,31 +21,32 @@ const User = () => {
   useEffect(() => {
     loadUser();
   }, []);
-  
-  
+
   const loadUser = async () => {
     const objectIdRegex = /^[0-9a-fA-F]{24}$/;
-  
+
     if (!objectIdRegex.test(id)) {
       setLoading(false);
       setUser(null);
       console.log("Invalid ID");
       return;
     }
-  
+
     try {
       console.log("Fetching user data...");
       console.log(id);
       const res = await axios.get(`http://localhost:5000/api/users/${id}`);
-  
+
       if (res.status === 200) {
         console.log("User data:", res.data);
         setUser(res.data);
-  
+
         if (res.data.role && res.data.role["$oid"]) {
           try {
             console.log("Fetching role data...");
-            const roleRes = await axios.get(`http://localhost:5000/api/roles/${res.data.role["$oid"]}`);
+            const roleRes = await axios.get(
+              `http://localhost:5000/api/roles/${res.data.role["$oid"]}`
+            );
             console.log("Role data:", roleRes.data);
             setUser((prevState) => ({ ...prevState, role: roleRes.data.name }));
           } catch (error) {
@@ -56,11 +56,13 @@ const User = () => {
         } else {
           setUser((prevState) => ({ ...prevState, role: "Role ID Missing" }));
         }
-  
+
         const userTaskIds = res.data.tasks.map((taskId) => taskId["$oid"]);
-        const userTasks = tasks.filter((task) => userTaskIds.includes(task._id["$oid"]));
+        const userTasks = tasks.filter((task) =>
+          userTaskIds.includes(task._id["$oid"])
+        );
         setTasks(userTasks);
-  
+
         setLoading(false);
       } else if (res.status === 404) {
         setLoading(false);
@@ -76,8 +78,6 @@ const User = () => {
       setUser(null);
     }
   };
-  
-
 
   if (!user) {
     return <Redirect to="/not-found" />;
@@ -88,7 +88,8 @@ const User = () => {
       <div className={`card ${loading ? "d-none" : ""}`}>
         <div className="card-body">
           <Link className="btn btn-primary" to="/users">
-            <FontAwesomeIcon icon={faArrowLeft} className="me-2" /> Go back users
+            <FontAwesomeIcon icon={faArrowLeft} className="me-2" /> Go back
+            users
           </Link>
           <hr />
 
@@ -107,7 +108,6 @@ const User = () => {
               <p>
                 <strong>Email:</strong> {user.email}
               </p>
-              
             </div>
           </div>
 
@@ -124,7 +124,8 @@ const User = () => {
                             <strong>Task title: </strong> {task.title}
                           </p>
                           <p>
-                            <strong>Task description: </strong> {task.description}
+                            <strong>Task description: </strong>{" "}
+                            {task.description}
                           </p>
                         </li>
                       ))}
@@ -148,7 +149,8 @@ const User = () => {
                             <strong>Project name: </strong> {project.name}
                           </p>
                           <p>
-                            <strong>Project description: </strong> {project.description}
+                            <strong>Project description: </strong>{" "}
+                            {project.description}
                           </p>
                         </li>
                       ))}

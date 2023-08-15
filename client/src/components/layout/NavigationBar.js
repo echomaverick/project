@@ -5,12 +5,11 @@ import axios from "axios";
 import { AuthContext } from "../layout/Auth";
 
 const NavigationBar = () => {
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout, token } = useContext(AuthContext);
   const history = useHistory();
   const [loading, setLoading] = useState(true);
   const [userTasks, setUserTasks] = useState([]);
   const [userProjects, setUserProjects] = useState([]);
-
 
   const handleLogout = () => {
     logout();
@@ -18,12 +17,15 @@ const NavigationBar = () => {
   };
 
   const handleUpdateProfile = async () => {
-    console.log("User ID:", user._id);
-
     try {
       const apiUrl = `http://localhost:5000/api/users/${user._id}`;
 
-      const response = await axios.get(apiUrl);
+      const response = await axios.get(apiUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       if (response.status === 200) {
         history.push({
           pathname: `/users/edit/${user._id}`,
@@ -36,8 +38,6 @@ const NavigationBar = () => {
       console.error("Error fetching user data:", error);
     }
   };
-
- 
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -61,7 +61,9 @@ const NavigationBar = () => {
     const fetchUserTasks = async () => {
       if (user) {
         try {
-          const response = await axios.get(`http://localhost:5000/api/tasks/user/${user.username}`);
+          const response = await axios.get(
+            `http://localhost:5000/api/tasks/user/${user.username}`
+          );
           setUserTasks(response.data);
         } catch (error) {
           console.error("Error fetching user tasks:", error);
@@ -72,7 +74,9 @@ const NavigationBar = () => {
     const fetchUserProjects = async () => {
       if (user) {
         try {
-          const response = await axios.get(`http://localhost:5000/api/projects/user/${user.username}`);
+          const response = await axios.get(
+            `http://localhost:5000/api/projects/user/${user.username}`
+          );
           setUserProjects(response.data);
         } catch (error) {
           console.error("Error fetching user projects:", error);
@@ -81,9 +85,9 @@ const NavigationBar = () => {
     };
 
     fetchUserData();
+    fetchUserTasks();
+    fetchUserProjects();
   }, [user]);
-
-  console.log("User data:", user);
 
   return (
     <Navbar
@@ -115,7 +119,10 @@ const NavigationBar = () => {
                 <NavDropdown.Item as={Link} to={`/tasks/user/${user.username}`}>
                   Tasks
                 </NavDropdown.Item>
-                <NavDropdown.Item as={Link} to={`/projects/user/${user.username}`}>
+                <NavDropdown.Item
+                  as={Link}
+                  to={`/projects/user/${user.username}`}
+                >
                   Projects
                 </NavDropdown.Item>
                 <NavDropdown.Item onClick={handleUpdateProfile}>

@@ -10,7 +10,6 @@ const Home = () => {
     setEmail(e.target.value);
   };
 
-
   const handleSubscribe = async () => {
     if (!email) {
       setMessage("Please enter your email.");
@@ -20,13 +19,16 @@ const Home = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/emails/subscribe", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",//specifies it will be send in a json format
-        },
-        body: JSON.stringify({ email }),//converts the js object into a json string
-      });
+      const response = await fetch(
+        "http://localhost:5000/api/emails/subscribe",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        }
+      );
 
       const data = await response.json();
 
@@ -94,7 +96,7 @@ const Home = () => {
     padding: "15px",
     width: "300px",
     fontSize: "18px",
-    marginRight: "-20px"
+    marginRight: "-20px",
   };
 
   const buttonStyle = {

@@ -193,8 +193,6 @@ const EditTask = () => {
     }));
   };
 
-  
-
   return (
     <div className="container">
       <div className="shadow p-5">
@@ -374,8 +372,6 @@ const EditTask = () => {
             </Link>
           </div>
         </form>
-
-        {/* Loader */}
         {loading && (
           <div className="loader-container">
             <div className="loader"></div>

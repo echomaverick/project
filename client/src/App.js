@@ -33,8 +33,6 @@ import AddUserTask from "./components/tasks/AddUserTask";
 import AddUserProject from "./components/projects/AddUserProject";
 import UserProject from "./components/projects/UserProject";
 
-
-
 function App(props) {
   const [isLoading, setIsLoading] = useState(true);
 
@@ -67,7 +65,7 @@ function App(props) {
               <Route exact path="/" component={Home} />
               <Route exact path="/about" component={About} />
               {/* task routes */}
-              <Route exact path="/usertask/add" component={AddUserTask}/>
+              <Route exact path="/usertask/add" component={AddUserTask} />
               <Route exact path="/tasks/user/:username" component={UserTasks} />
               <Route exact path="/tasks/:id" component={Task} />
               <Route exact path="/tasks" component={AllTasks} />
@@ -75,8 +73,12 @@ function App(props) {
               <Route exact path="/tasks/edit/:id" component={EditTask} />
 
               {/* project routes*/}
-              <Route exact path="/userproject/add" component={AddUserProject}/>
-              <Route exact path="/projects/user/:username" component={UserProject}/>
+              <Route exact path="/userproject/add" component={AddUserProject} />
+              <Route
+                exact
+                path="/projects/user/:username"
+                component={UserProject}
+              />
               <Route exact path="/projects/:id" component={Projects} />
               <Route exact path="/projects" component={AllProjects} />
               <Route exact path="/projects/edit/:id" component={EditProject} />
@@ -89,9 +91,8 @@ function App(props) {
               <Route exact path="/users/edit/:id" component={EditUser} />
               <Route exact path="/users/:id" component={User} />
 
-
-              <Route exact path="/login" component={Login}/>
-              <Route exact path="/signup" component={Signup}/>
+              <Route exact path="/login" component={Login} />
+              <Route exact path="/signup" component={Signup} />
               <Route component={NotFound} />
               <Redirect to="/" />
             </Switch>
@@ -103,7 +104,3 @@ function App(props) {
 }
 
 export default App;
-
-
-
-

@@ -16,6 +16,7 @@ const EditUser = () => {
 
   const { name, surname, username, email, role } = user;
   const onInputChange = (e) => {
+    console.log(e.target.value);
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
@@ -26,23 +27,35 @@ const EditUser = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
+  
     try {
-      await axios.put(`http://localhost:5000/api/users/${id}`, user);
+      const token = localStorage.getItem("accessToken"); // Assuming you store the token in localStorage
+      await axios.put(`http://localhost:5000/api/users/${id}`, user, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(user);
+  
       setLoading(false);
-      history.push("/users");
+      loadUser();
+      history.push("/");
     } catch (error) {
       setLoading(false);
+      console.log(error);
       console.error("Error updating user:", error);
     }
   };
+  
 
   const loadUser = async () => {
     try {
       const result = await axios.get(`http://localhost:5000/api/users/${id}`);
       const { role, ...userData } = result.data;
       setUser({ ...userData, role });
+      console.log(userData);
     } catch (error) {
+      console.log(error);
       console.error("Error loading user:", error);
     }
   };

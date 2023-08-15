@@ -85,6 +85,11 @@ const UserProject = ({ match }) => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const { username } = match.params;
+  const history = useHistory();
+
+  const handleEditProject = (projectId) => {
+    history.push(`/projects/edit/${projectId}`);
+  };
 
   useEffect(() => {
     const fetchUserProjects = async () => {
@@ -113,7 +118,7 @@ const UserProject = ({ match }) => {
       <div className="row">
         {projects.map((project) => (
           <div key={project._id} className="col-md-4 md-4">
-            <ProjectCard project={project} />
+            <ProjectCard project={project} onEdit={handleEditProject}  />
           </div>
         ))}
       </div>

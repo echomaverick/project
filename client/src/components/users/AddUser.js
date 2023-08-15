@@ -37,7 +37,7 @@
 //       name.trim() !== "" &&
 //       surname.trim() !== "" &&
 //       username.trim() !== "" &&
-//       email.trim() !== "" && 
+//       email.trim() !== "" &&
 //       password.trim() !== ""
 //     );
 //   };
@@ -150,7 +150,6 @@
 //     setShowSuccessModal(false);
 //   };
 
-  
 //   const handlePasswordChange = (e) => {
 //     setPassword(e.target.value);
 //     clearError("password");
@@ -281,12 +280,6 @@
 
 // export default AddUser;
 
-
-
-
-
-
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
@@ -334,7 +327,8 @@ const AddUser = () => {
   };
 
   const isPasswordValid = () => {
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+    const passwordRegex =
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
     return passwordRegex.test(password);
   };
 

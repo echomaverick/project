@@ -86,128 +86,6 @@ const TaskCard = ({ task, onDelete }) => {
     </div>
   );
 };
-
-// const AllTasks = () => {
-//   const [tasks, setTasks] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [currentPage, setCurrentPage] = useState(1);
-//   const itemsPerPage = 6;
-//   const [searchTerm, setSearchTerm] = useState("");
-//   const [searchResults, setSearchResults] = useState([]);
-
-//   useEffect(() => {
-//     loadTasks();
-//   }, [currentPage]);
-
-//   useEffect(() => {
-//     if (searchTerm) {
-//       setSearchResults(
-//         tasks.filter(
-//           (task) =>
-//             task.title &&
-//             task.title.toLowerCase().includes(searchTerm.toLowerCase())
-//         )
-//       );
-//     } else {
-//       setSearchResults([]);
-//     }
-//   }, [searchTerm, tasks]);
-
-//   const loadTasks = async () => {
-//     try {
-//       setLoading(true);
-//       const response = await axios.get("http://localhost:5000/api/tasks");
-//       setTasks(response.data);
-//     } catch (error) {
-//       console.error("Error loading tasks:", error);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const deleteTask = async (id) => {
-//     try {
-//       await axios.delete(`http://localhost:5000/api/tasks/${id}`);
-//       loadTasks();
-//     } catch (error) {
-//       console.error("Error deleting task:", error);
-//     }
-//   };
-
-//   const indexOfLastItem = currentPage * itemsPerPage;
-//   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-//   const currentTasks = searchTerm
-//     ? searchResults.slice(indexOfFirstItem, indexOfLastItem)
-//     : tasks.slice(indexOfFirstItem, indexOfLastItem);
-
-//   const paginate = (pageNumber) => {
-//     setCurrentPage(pageNumber);
-//   };
-
-//   const handleSearchChange = (e) => {
-//     setSearchTerm(e.target.value);
-//     setCurrentPage(1);
-//   };
-
-//   const handleSearchClear = () => {
-//     setSearchTerm("");
-//   };
-
-//   return (
-//     <div className="container">
-//       <div className={`py-4`}>
-//         <div className="d-flex justify-content-between align-items-center">
-//           <h1 className="text-center">All Tasks</h1>
-//           <div className="search-bar">
-//             <input
-//               type="text"
-//               value={searchTerm}
-//               onChange={handleSearchChange}
-//               placeholder="Search tasks..."
-//             />
-//             {searchTerm && (
-//               <button className="clear-btn" onClick={handleSearchClear}>
-//                 Clear
-//               </button>
-//             )}
-//           </div>
-//           <Link to="/task/add" className="btn btn1 btn-primary btn-rounded">
-//             Add a task
-//           </Link>
-//         </div>
-//         <div className="row mt-4">
-//           {loading ? (
-//             Array.from({ length: itemsPerPage }).map((_, index) => (
-//               <div className="col-md-6 col-lg-4 mb-4" key={index}>
-//                 <SkeletonUserCard />
-//               </div>
-//             ))
-//           ) : currentTasks.length === 0 ? (
-//             <div className="col-md-12 text-center">
-//               {searchTerm ? <h3>No tasks found</h3> : null}
-//             </div>
-//           ) : (
-//             currentTasks.map((task) => (
-//               <div className="col-md-6 col-lg-4 mb-4" key={task._id}>
-//                 <TaskCard task={task} onDelete={deleteTask} />
-//               </div>
-//             ))
-//           )}
-//         </div>
-//         <Pagination
-//           itemsPerPage={itemsPerPage}
-//           totalItems={searchTerm ? searchResults.length : tasks.length}
-//           currentPage={currentPage}
-//           paginate={paginate}
-//         />
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default AllTasks;
-
-
 const AllTasks = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -262,7 +140,9 @@ const AllTasks = () => {
     : tasks.slice(indexOfFirstItem, indexOfLastItem);
 
   const totalPages = Math.ceil(
-    searchTerm ? searchResults.length / itemsPerPage : tasks.length / itemsPerPage
+    searchTerm
+      ? searchResults.length / itemsPerPage
+      : tasks.length / itemsPerPage
   );
 
   const paginate = (pageNumber) => {
@@ -352,4 +232,3 @@ const AllTasks = () => {
 };
 
 export default AllTasks;
-

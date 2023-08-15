@@ -81,7 +81,7 @@ const AddProject = () => {
         "http://localhost:5000/api/projects",
         projectData
       );
-      console.log("Project added successfully:", response.data.project);
+      console.log("Project added successfully:", response.data);
       setLoading(false);
       history.push("/projects");
     } catch (error) {

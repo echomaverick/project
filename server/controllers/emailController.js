@@ -1,30 +1,30 @@
-const nodemailer = require('nodemailer');
-const Subscriber = require('../models/emailModel');
+const nodemailer = require("nodemailer");
+const Subscriber = require("../models/emailModel");
 
 const transporter = nodemailer.createTransport({
-    service: process.env.EMAIL_SERVICE_PROVIDER,
-    auth: {
-        user: process.env.EMAIL_ADDRESS,
-        pass: process.env.EMAIL_PASSWORD,
-    },
+  service: process.env.EMAIL_SERVICE_PROVIDER,
+  auth: {
+    user: process.env.EMAIL_ADDRESS,
+    pass: process.env.EMAIL_PASSWORD,
+  },
 });
 
-exports.subscribeEmail = async(req,res) => {
-    const {email} = req.body;
-    try{
-        const existingSubsriber = await Subscriber.findOne({email});
-        if(existingSubsriber){
-            return res.status(404).json({error: 'Email already subscribed'});
-        }
+exports.subscribeEmail = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const existingSubsriber = await Subscriber.findOne({ email });
+    if (existingSubsriber) {
+      return res.status(404).json({ error: "Email already subscribed" });
+    }
 
-        const newSubscriber = new Subscriber({email});
-        await newSubscriber.save();
+    const newSubscriber = new Subscriber({ email });
+    await newSubscriber.save();
 
-        const mailOptions = {
-            from: process.env.EMAIL_ADDRESS,
-            to: email,
-            subject: "Welcome to Proventus Nexus",
-            html: `
+    const mailOptions = {
+      from: process.env.EMAIL_ADDRESS,
+      to: email,
+      subject: "Welcome to Proventus Nexus",
+      html: `
               <div style="text-align: center; font-family: Poppins, sans-serif;">
                 <h1 style="font-size: 24px;">Welcome to Proventus Nexus</h1>
                 <a href="https://ibb.co/MRGSPYw"><img src="https://i.ibb.co/MRGSPYw/logo.jpg" alt="logo" border="0" /></a>
@@ -53,21 +53,16 @@ exports.subscribeEmail = async(req,res) => {
                 </p>
               </div>
             `,
-        };
-          
-          
-          
-          
+    };
 
-        await transporter.sendMail(mailOptions);
+    await transporter.sendMail(mailOptions);
 
-        res.status(200).json({message: 'Subscription successful'});
-    }catch(error){
-        console.log("Email subsription failed:", error);
-        res.status(500).json({error: 'An error occurred'});
-    }
-}
-
+    res.status(200).json({ message: "Subscription successful" });
+  } catch (error) {
+    console.log("Email subsription failed:", error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+};
 
 exports.getAllSubscribers = async (req, res) => {
   try {
@@ -75,6 +70,6 @@ exports.getAllSubscribers = async (req, res) => {
     res.status(200).json(subscribers);
   } catch (error) {
     console.log("Failed to get subscribers:", error);
-    res.status(500).json({ error: 'An error occurred' });
+    res.status(500).json({ error: "An error occurred" });
   }
 };

@@ -68,9 +68,10 @@ const AddUserTask = () => {
     };
 
     try {
+      const username = selectedUsers[0].username;
       await axios.post("http://localhost:5000/api/tasks", taskData);
       setLoading(false);
-      history.push("/tasks");
+      history.push("/");
     } catch (error) {
       setLoading(false);
       console.error("Error adding task:", error);
@@ -119,8 +120,8 @@ const AddUserTask = () => {
   const history = useHistory();
 
   const handleCancel = () => {
-    history.goBack(); 
-};
+    history.goBack();
+  };
 
   return (
     <div className="container">
@@ -229,10 +230,7 @@ const AddUserTask = () => {
             >
               Add Task
             </button>
-            <button
-              className="btn btn-primary"
-              onClick={handleCancel}
-            >
+            <button className="btn btn-primary" onClick={handleCancel}>
               Cancel
             </button>
           </div>

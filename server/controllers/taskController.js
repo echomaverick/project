@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const Project = require("../models/projectModel");
 const User = require("../models/userModel");
 
-
 //create a new task
 const createTask = async (req, res) => {
   try {
@@ -65,7 +64,6 @@ const createTask = async (req, res) => {
   }
 };
 
-
 //get all tasks
 const getAllTasks = async (req, res) => {
   try {
@@ -78,7 +76,6 @@ const getAllTasks = async (req, res) => {
     res.status(500).json({ error: "Failed to get all tasks" });
   }
 };
-
 
 //get a task by id
 const getTaskById = async (req, res) => {
@@ -104,9 +101,7 @@ const getTaskById = async (req, res) => {
   }
 };
 
-
 //update a task
-// Assuming you have the required imports and middleware set up
 const updateTask = async (req, res) => {
   try {
     const { id } = req.params;
@@ -143,12 +138,24 @@ const updateTask = async (req, res) => {
       });
     }
 
-    if (!Array.isArray(assignedTo) || !assignedTo.every((assignedToId) => mongoose.Types.ObjectId.isValid(assignedToId))) {
-      return res.status(400).json({ error: "Invalid 'assignedTo' field. It should be an array of valid ObjectId." });
+    if (
+      !Array.isArray(assignedTo) ||
+      !assignedTo.every((assignedToId) =>
+        mongoose.Types.ObjectId.isValid(assignedToId)
+      )
+    ) {
+      return res
+        .status(400)
+        .json({
+          error:
+            "Invalid 'assignedTo' field. It should be an array of valid ObjectId.",
+        });
     }
 
-    // Find the new users to be assigned (users in assignedTo not already in task.assignedTo)
-    const newAssignedTo = assignedTo.filter(userId => !task.assignedTo.some(assignedUserId => assignedUserId.equals(userId)));
+    const newAssignedTo = assignedTo.filter(
+      (userId) =>
+        !task.assignedTo.some((assignedUserId) => assignedUserId.equals(userId))
+    );
 
     task.title = title;
     task.description = description;
@@ -163,9 +170,6 @@ const updateTask = async (req, res) => {
     res.status(500).json({ error: "Failed to update task" });
   }
 };
-
-
-
 
 //delete a task
 const deleteTask = async (req, res) => {
@@ -184,26 +188,23 @@ const deleteTask = async (req, res) => {
   }
 };
 
-
-const getTasksForUserByUsername = async (req,res) => {
-  try{
+const getTasksForUserByUsername = async (req, res) => {
+  try {
     const username = req.params.username;
-    const user = await User.findOne({username});
-    if(!user){
-      return res.status(404).json({error: 'User not found'});
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
     }
 
-    const tasks = await Task.find({assignedTo: user._id})
-    .populate("assignedTo", "name surname username email")
-    .populate("projects", "name description");
+    const tasks = await Task.find({ assignedTo: user._id })
+      .populate("assignedTo", "name surname username email")
+      .populate("projects", "name description");
     res.status(200).json(tasks);
-  }catch(error){
+  } catch (error) {
     console.log(error);
-    res.status(500).json({error: "An errror occurred"});
+    res.status(500).json({ error: "An errror occurred" });
   }
 };
-
-
 
 module.exports = {
   createTask,
@@ -211,5 +212,5 @@ module.exports = {
   getTaskById,
   updateTask,
   deleteTask,
-  getTasksForUserByUsername
+  getTasksForUserByUsername,
 };

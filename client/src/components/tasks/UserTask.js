@@ -84,7 +84,6 @@ const TaskCard = ({ task, onDelete }) => {
   );
 };
 
-
 const UserTasks = ({ match }) => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -93,7 +92,9 @@ const UserTasks = ({ match }) => {
   useEffect(() => {
     const fetchUserTasks = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/tasks/user/${username}`);
+        const response = await axios.get(
+          `http://localhost:5000/api/tasks/user/${username}`
+        );
         setTasks(response.data);
         setLoading(false);
       } catch (error) {
@@ -105,11 +106,19 @@ const UserTasks = ({ match }) => {
     fetchUserTasks();
   }, [username]);
 
-
+  const onDeleteTask = async (taskId) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/tasks/${taskId}`);
+      // After successfully deleting the task, update the tasks list
+      setTasks((prevTasks) => prevTasks.filter((task) => task._id !== taskId));
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
+  };
 
   return (
     <div className="container">
-     <div className="d-flex justify-content-between align-items-center mb-3">
+      <div className="d-flex justify-content-between align-items-center mb-3">
         <h2 className="mb-0">Tasks for {username}</h2>
         <Link className="btn btn-success" to="/usertask/add">
           Add Task
@@ -118,7 +127,7 @@ const UserTasks = ({ match }) => {
       <div className="row">
         {tasks.map((task) => (
           <div key={task._id} className="col-md-4 mb-4">
-            <TaskCard task={task} />
+            <TaskCard task={task} onDelete={onDeleteTask} />
           </div>
         ))}
       </div>

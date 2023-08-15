@@ -10,7 +10,7 @@ const Task = () => {
     title: "",
     description: "",
     users: [],
-    projects: []
+    projects: [],
   });
 
   const { id } = useParams();
@@ -35,13 +35,15 @@ const Task = () => {
       setTask(res.data);
 
       if (res.data.assignedTo && res.data.assignedTo.length > 0) {
-        const assignedUsersPromises = res.data.assignedTo.map(async (userId) => {
-          console.log("User id", userId);
-          const userRes = await axios.get(
-            `http://localhost:5000/api/users/${userId["_id"]}`
-          );
-          return userRes.data;
-        });
+        const assignedUsersPromises = res.data.assignedTo.map(
+          async (userId) => {
+            console.log("User id", userId);
+            const userRes = await axios.get(
+              `http://localhost:5000/api/users/${userId["_id"]}`
+            );
+            return userRes.data;
+          }
+        );
         const assignedUsersData = await Promise.all(assignedUsersPromises);
         setTask((prevState) => ({
           ...prevState,
@@ -81,88 +83,90 @@ const Task = () => {
 
   return (
     <div className="container py-4">
-    {loading ? (
-      <div className="loader-container">
-        <div className="loader"></div>
-      </div>
-    ) : (
-      <>
-        <Link className="btn btn-primary mb-4" to={`/tasks/user/${task.assignedTo[0].username}`}>
-          <FontAwesomeIcon icon={faArrowLeft} className="me-2" /> Go back to tasks
-        </Link>
-        <div className="row">
-          <div className="col-md-12">
-            <div className="card mb-4">
-              <div className="card-body">
-                <h2>Title: {task.title}</h2>
-                <p>
-                  <strong>Description:</strong> {task.description}
-                </p>
-              </div>
-            </div>
-          </div>
+      {loading ? (
+        <div className="loader-container">
+          <div className="loader"></div>
         </div>
-        <div className="row">
-          <div className="col-md-6">
-            <div className="card mb-4">
-              <div className="card-body">
-                <h4>Assigned Users:</h4>
-                {task.assignedTo && task.assignedTo.length > 0 ? (
-                  <ul className="list-group list-group-flush">
-                    {task.assignedTo.map((user) => (
-                      <li key={user._id} className="list-group-item">
-                        <p>
-                          <strong>Name:</strong> {user.name}
-                        </p>
-                        <p>
-                          <strong>Username:</strong> {user.username}
-                        </p>
-                        <p>
-                          <strong>Email:</strong> {user.email}
-                        </p>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No users assigned to this task.</p>
-                )}
+      ) : (
+        <>
+          <Link
+            className="btn btn-primary mb-4"
+            to={`/tasks/user/${task.assignedTo[0].username}`}
+          >
+            <FontAwesomeIcon icon={faArrowLeft} className="me-2" /> Go back to
+            tasks
+          </Link>
+          <div className="row">
+            <div className="col-md-12">
+              <div className="card mb-4">
+                <div className="card-body">
+                  <h2>Title: {task.title}</h2>
+                  <p>
+                    <strong>Description:</strong> {task.description}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-          <div className="col-md-6">
-            <div className="card mb-4">
-              <div className="card-body">
-                <h4>Associated Projects:</h4>
-                {task.projects && task.projects.length > 0 ? (
-                  <ul className="list-group list-group-flush">
-                    {task.projects.map((project) => (
-                      <li key={project._id} className="list-group-item">
-                        <p>
-                          <strong>Project name:</strong> {project.name}
-                        </p>
-                        <p>
-                          <strong>Project description:</strong>{" "}
-                          {project.description}
-                        </p>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No projects associated with this task.</p>
-                )}
+          <div className="row">
+            <div className="col-md-6">
+              <div className="card mb-4">
+                <div className="card-body">
+                  <h4>Assigned Users:</h4>
+                  {task.assignedTo && task.assignedTo.length > 0 ? (
+                    <ul className="list-group list-group-flush">
+                      {task.assignedTo.map((user) => (
+                        <li key={user._id} className="list-group-item">
+                          <p>
+                            <strong>Name:</strong> {user.name}
+                          </p>
+                          <p>
+                            <strong>Username:</strong> {user.username}
+                          </p>
+                          <p>
+                            <strong>Email:</strong> {user.email}
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>No users assigned to this task.</p>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="col-md-6">
+              <div className="card mb-4">
+                <div className="card-body">
+                  <h4>Associated Projects:</h4>
+                  {task.projects && task.projects.length > 0 ? (
+                    <ul className="list-group list-group-flush">
+                      {task.projects.map((project) => (
+                        <li key={project._id} className="list-group-item">
+                          <p>
+                            <strong>Project name:</strong> {project.name}
+                          </p>
+                          <p>
+                            <strong>Project description:</strong>{" "}
+                            {project.description}
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>No projects associated with this task.</p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </>
-    )}
-  </div>
-);
+        </>
+      )}
+    </div>
+  );
 };
 
 export default Task;
-
-
 
 // import React, { useState, useEffect, useContext } from "react";
 // import { useParams, Link } from "react-router-dom";
