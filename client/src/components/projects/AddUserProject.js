@@ -81,6 +81,33 @@ const AddUserProject = () => {
         "http://localhost:5000/api/projects",
         projectData
       );
+      const addedProject = response.data;
+
+      const taskDetails = await Promise.all(
+        addedProject.tasks.map(async (taskId) => {
+          const taskResponse = await axios.get(
+            `http://localhost:5000/api/tasks/${taskId}`
+          );
+          return taskResponse.data;
+        })
+      );
+
+      const userDetails = await Promise.all(
+        addedProject.users.map(async (userId) => {
+          const userResponse = await axios.get(
+            `http://localhost:5000/api/users/${userId}`
+          );
+          return userResponse.data;
+        })
+      );
+      await axios.post("http://localhost:5000/api/emails/send-project-email", {
+        email: selectedUsers[0].email,
+        name: addedProject.name,
+        description: addedProject.description,
+        tasks: taskDetails,
+        users: userDetails,
+      });
+
       console.log("Project added successfully:", response.data);
       setLoading(false);
       history.push("/");

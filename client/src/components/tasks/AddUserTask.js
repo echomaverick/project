@@ -24,6 +24,71 @@ const AddUserTask = () => {
     }
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   const taskNameRegex = /^[A-Za-z\s]+$/;
+  //   const taskDescriptionRegex = /^[A-Za-z\s]+$/;
+
+  //   const newErrors = {};
+
+  //   if (!taskNameRegex.test(title)) {
+  //     newErrors.title = "Task title should only contain letters and spaces.";
+  //   } else if (title.trim() !== "" && title[0] !== title[0].toUpperCase()) {
+  //     newErrors.title = "Task title should start with an uppercase letter.";
+  //   }
+
+  //   if (!taskDescriptionRegex.test(description)) {
+  //     newErrors.description =
+  //       "Task description should only contain letters and spaces.";
+  //   } else if (
+  //     description.trim() !== "" &&
+  //     description[0] !== description[0].toUpperCase()
+  //   ) {
+  //     newErrors.description =
+  //       "Task description should start with an uppercase letter.";
+  //   }
+
+  //   if (selectedUsers.length === 0) {
+  //     newErrors.users = "Please select at least one user.";
+  //   }
+
+  //   setErrors(newErrors);
+
+  //   if (Object.keys(newErrors).length > 0) {
+  //     return;
+  //   }
+
+  //   setLoading(true);
+
+  //   const taskData = {
+  //     title,
+  //     description,
+  //     assignedTo: selectedUsers,
+  //   };
+
+  //   try {
+  //     const username = selectedUsers[0].username;
+
+  //     // Create the task
+  //     const taskResponse = await axios.post("http://localhost:5000/api/tasks", taskData);
+  //     const addedTask = taskResponse.data; // Extract the data from the response
+
+  //     // Call an API endpoint to send the task email
+  //     await axios.post("http://localhost:5000/api/emails/send-task-email", {
+  //       email: selectedUsers[0].email,
+  //       title: addedTask.title,
+  //       description: addedTask.description
+  //     });
+
+  //     setLoading(false);
+  //     history.push("/");
+  //   } catch (error) {
+  //     setLoading(false);
+  //     console.error("Error adding task:", error);
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -61,15 +126,32 @@ const AddUserTask = () => {
 
     setLoading(true);
 
-    const taskData = {
-      title,
-      description,
-      assignedTo: selectedUsers,
-    };
-
     try {
-      const username = selectedUsers[0].username;
-      await axios.post("http://localhost:5000/api/tasks", taskData);
+      const tasksResponse = await axios.post(
+        "http://localhost:5000/api/tasks",
+        {
+          title,
+          description,
+          assignedTo: selectedUsers,
+        }
+      );
+
+      const addedTask = tasksResponse.data;
+
+      for (const userId of selectedUsers) {
+        const selectedUser = availableUsers.find((user) => user._id === userId);
+
+        if (selectedUser) {
+          const userEmail = selectedUser.email;
+
+          await axios.post("http://localhost:5000/api/emails/send-task-email", {
+            email: userEmail,
+            title: addedTask.title,
+            description: addedTask.description,
+          });
+        }
+      }
+
       setLoading(false);
       history.push("/");
     } catch (error) {

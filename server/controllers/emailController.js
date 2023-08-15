@@ -73,3 +73,66 @@ exports.getAllSubscribers = async (req, res) => {
     res.status(500).json({ error: "An error occurred" });
   }
 };
+
+exports.sendTaskEmail = async (req, res) => {
+  const { email, title, description } = req.body;
+  try {
+    const mailOptions = {
+      from: process.env.EMAIL_ADDRESS,
+      to: email,
+      subject: "New Task Created",
+      html: `
+      <div>
+        <h1>New Task Created</h1>
+        <p>Title: ${title}</p>
+        <p>Description: ${description}</p>
+      </div>
+    `,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ message: "Task email sent successfully" });
+  } catch (error) {
+    console.log("Task email sending failed:", error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+};
+
+exports.sendProjectEmail = async (req, res) => {
+  const { email, name, description, tasks, users } = req.body;
+
+  const taskList = tasks.map((task) => `<li>${task.title}</li>`).join("");
+  const userList = users
+    .map((user) => `<li>${user.name} ${user.surname}</li>`)
+    .join("");
+
+  try {
+    const mailOptions = {
+      from: process.env.EMAIL_ADDRESS,
+      to: email,
+      subject: "New Project Created",
+      html: `
+        <div>
+          <h1>New Project Created</h1>
+          <p>Name: ${name}</p>
+          <p>Description: ${description}</p>
+          <h2>Tasks:</h2>
+          <ul>
+            ${taskList}
+          </ul>
+          <h2>Users:</h2>
+          <ul>
+            ${userList}
+          </ul>
+        </div>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+    res.status(200).json({ message: "Project email sent successfully" });
+  } catch (error) {
+    console.log("Project email sending failed", error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+};
