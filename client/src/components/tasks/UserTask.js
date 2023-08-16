@@ -109,7 +109,6 @@ const UserTasks = ({ match }) => {
   const onDeleteTask = async (taskId) => {
     try {
       await axios.delete(`http://localhost:5000/api/tasks/${taskId}`);
-      // After successfully deleting the task, update the tasks list
       setTasks((prevTasks) => prevTasks.filter((task) => task._id !== taskId));
     } catch (error) {
       console.error("Error deleting task:", error);

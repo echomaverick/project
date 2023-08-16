@@ -8,7 +8,7 @@ const Projects = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState(null);
-  
+
   const { id } = useParams();
   const objectIdRegex = /^[0-9a-fA-F]{24}$/;
 
@@ -38,7 +38,6 @@ const Projects = () => {
   //   return <Redirect to="/not-found" />;
   // }
 
-
   return (
     <div className="container py-4">
       <div className="card shadow">
@@ -47,6 +46,7 @@ const Projects = () => {
             <FontAwesomeIcon icon={faArrowLeft} className="me-2" />
             Go back to projects
           </Link>
+
           <hr />
           <h2 className="border-bottom pb-3">Projects</h2>
           {loading ? (
