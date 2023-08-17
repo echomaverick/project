@@ -20,6 +20,10 @@ exports.subscribeEmail = async (req, res) => {
     const newSubscriber = new Subscriber({ email });
     await newSubscriber.save();
 
+    const confirmLink = `http://localhost:3000/confirm/${encodeURIComponent(
+      email
+    )}`;
+
     const mailOptions = {
       from: process.env.EMAIL_ADDRESS,
       to: email,
@@ -30,12 +34,13 @@ exports.subscribeEmail = async (req, res) => {
                 <a href="https://ibb.co/MRGSPYw"><img src="https://i.ibb.co/MRGSPYw/logo.jpg" alt="logo" border="0" /></a>
                 <p style="font-size: 16px;">
                   Thanks for subscribing to our newsletter. 
-                  You’ll be able to get the latest news, promotions and offers.
-                  We also want to make sure you’re getting the most out of your experience with us,
-                  so over the next few weeks, we’ll share the best of what Proventus Nexus has to offer.
-                  Keep an eye out for us in your inbox.
+                  Thank you for subscribing to our newsletter. Please confirm your subscription by clicking the button below:
                 </p>
           
+
+                <a style="font-size: 12px; text-decoration: none; color: white; background-color: #007bff; padding: 10px 20px; border-radius: 5px;" href="${confirmLink}">
+                Confirm Subscription
+                </a>
           
                 <p style="font-size: 12px; margin-top: 20px;">
                   You are receiving this email because you subscribed to Proventus Nexus newsletter.
@@ -133,6 +138,24 @@ exports.sendProjectEmail = async (req, res) => {
     res.status(200).json({ message: "Project email sent successfully" });
   } catch (error) {
     console.log("Project email sending failed", error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+};
+
+exports.confirmSubscription = async (req, res) => {
+  const { email } = req.params;
+
+  try {
+    const subscriber = await Subscriber.findOne({ email });
+    if (!subscriber) {
+      return res.status(400).json({ error: "Subscriber not found" });
+    }
+    subscriber.confirmed = true;
+    await subscriber.save();
+
+    res.status(200).json({ message: "Subscription confirmed" });
+  } catch (error) {
+    console.log("Confirmation error:", error);
     res.status(500).json({ error: "An error occurred" });
   }
 };

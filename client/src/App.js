@@ -30,6 +30,7 @@ import UserTasks from "./components/tasks/UserTask";
 import AddUserTask from "./components/tasks/AddUserTask";
 import AddUserProject from "./components/projects/AddUserProject";
 import UserProject from "./components/projects/UserProject";
+import ConfirmationPage from "./components/pages/ConfirmSubscripiton";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -107,6 +108,11 @@ function App() {
                     <Route exact path="/user/add" component={AddUser} />
                     <Route exact path="/users/edit/:id" component={EditUser} />
                     <Route exact path="/users/:id" component={User} />
+
+                    <Route
+                      path="/confirm/:email"
+                      component={ConfirmationPage}
+                    />
                   </>
                 ) : (
                   <Redirect to="/login" />
