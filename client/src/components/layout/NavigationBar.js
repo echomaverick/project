@@ -5,7 +5,7 @@ import axios from "axios";
 import { AuthContext } from "../layout/Auth";
 
 const NavigationBar = () => {
-  const { user, logout, token } = useContext(AuthContext);
+  const { user, logout, token, updateUser } = useContext(AuthContext);
   const history = useHistory();
   const [loading, setLoading] = useState(true);
   const [userTasks, setUserTasks] = useState([]);
@@ -27,6 +27,8 @@ const NavigationBar = () => {
       });
 
       if (response.status === 200) {
+        updateUser(response.data);
+        console.log("User data updated:", response.data);
         history.push({
           pathname: `/users/edit/${user._id}`,
           state: { userData: response.data },
@@ -89,6 +91,9 @@ const NavigationBar = () => {
     fetchUserProjects();
   }, [user]);
 
+
+  console.log("Rendering NavigationBar with user:", user);
+  
   return (
     <Navbar
       collapseOnSelect
