@@ -6,7 +6,7 @@ const User = require("../models/userModel");
 //create a new project
 const createProject = async (req, res) => {
   try {
-    const { name, description, users, tasks } = req.body;
+    const { name, description, users, tasks, dueDate } = req.body;
     console.log("Received project data:", { name, description, users, tasks });
 
     if (!name || !description || !users) {
@@ -54,6 +54,7 @@ const createProject = async (req, res) => {
       description,
       tasks: tasks || [],
       users,
+      dueDate: new Date(dueDate),
     });
 
     const newProject = await project.save();

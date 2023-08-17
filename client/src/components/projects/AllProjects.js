@@ -298,6 +298,7 @@ const AllProjects = () => {
             <button
               className="btn1 btn-danger btn-rounded"
               onClick={confirmDelete}
+              onDelete={handleDelete(projects)}
             >
               Delete
             </button>

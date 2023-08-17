@@ -13,6 +13,8 @@ const AddUserProject = () => {
   const [availableTasks, setAvailableTasks] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isDropdownOpenTasks, setIsDropdownOpenTasks] = useState(false);
+  const [dueDate, setDueDate] = useState("");
+
   const history = useHistory();
 
   useEffect(() => {
@@ -69,11 +71,14 @@ const AddUserProject = () => {
     setLoading(true);
     setErrors({});
 
+    const formattedDueDate = dueDate ? new Date(dueDate).toISOString() : "";
+
     const projectData = {
       name,
       description,
       users: selectedUsers.map((user) => user._id),
       tasks: selectedTasks.map((task) => task._id),
+      dueDate: formattedDueDate
     };
 
     try {
@@ -106,6 +111,7 @@ const AddUserProject = () => {
         description: addedProject.description,
         tasks: taskDetails,
         users: userDetails,
+        dueDate,
       });
 
       console.log("Project added successfully:", response.data);
@@ -347,6 +353,14 @@ const AddUserProject = () => {
               )}
             </div>
             {errors.tasks && <div className="text-danger">{errors.tasks}</div>}
+          </div>
+          <div className="form-group mb-3">
+            <label htmlFor="dueDate" className="form-label">
+              Due Date and Time
+            </label>
+            <input type="datetime-local" id="dueDate" className="form-control form-control-lg" value={dueDate} onChange={(e) => setDueDate(e.target.value)}
+            required/>
+            {errors.dueDate && <div className="text-danger">{errors.dueDate}</div>}
           </div>
           <div className="d-flex justify-content-start">
             <button

@@ -5,7 +5,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 const Projects = () => {
-  const [projects, setProjects] = useState([]);
+  const [projects, setProjects] = useState({
+    name: "",
+    description: "",
+    users: [],
+    tasks: [],
+    dueDate: ""
+  });
   const [loading, setLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState(null);
 
@@ -62,6 +68,16 @@ const Projects = () => {
                 <p>
                   <strong>Description:</strong> {selectedProject.description}
                 </p>
+                <p
+                    className={
+                      new Date(selectedProject.dueDate) < new Date() ? "overdue" : ""
+                    }
+                  >
+                    <strong>Project Date and Time:</strong>{" "}
+                    {selectedProject.dueDate
+                      ? new Date(selectedProject.dueDate).toLocaleString()
+                      : "N/A"}
+                  </p>
               </div>
               <div className="row mt-3">
                 <div className="col-md-6">

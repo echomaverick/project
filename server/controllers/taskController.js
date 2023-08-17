@@ -6,7 +6,7 @@ const User = require("../models/userModel");
 //create a new task
 const createTask = async (req, res) => {
   try {
-    const { title, description, assignedTo, projects } = req.body;
+    const { title, description, assignedTo, projects, dueDate } = req.body;
 
     if (!title || !description) {
       throw new Error("Title and description of the task are required!");
@@ -44,6 +44,7 @@ const createTask = async (req, res) => {
       description,
       assignedTo,
       projects,
+      dueDate: new Date(dueDate),
     });
 
     await newTask.save();

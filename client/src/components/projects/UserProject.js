@@ -11,7 +11,7 @@ const ProjectCard = ({ project, onDelete, onEdit }) => {
   };
 
   const confirmDelete = () => {
-    onDelete(project);
+    onDelete(project._id);
     setShowConfirmation(false);
   };
 
@@ -69,7 +69,7 @@ const ProjectCard = ({ project, onDelete, onEdit }) => {
             </button>
             <button
               className="btn btn-danger btn-rounded ml-2"
-              onClick={() => handleDelete()}
+              onClick={handleDelete}
             >
               Delete
             </button>
@@ -107,6 +107,16 @@ const UserProject = ({ match }) => {
     fetchUserProjects();
   }, [username]);
 
+  
+  const oneDeleteProject = async (projectId) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/tasks/${projectId}`);
+      setProjects((prevProjects) => prevProjects.filter((project) => project._id !== projectId));
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
+  };
+
   return (
     <div className="container">
       <div className="d-flex justify-content-between align-items-center mb-3">
@@ -118,7 +128,7 @@ const UserProject = ({ match }) => {
       <div className="row">
         {projects.map((project) => (
           <div key={project._id} className="col-md-4 md-4">
-            <ProjectCard project={project} onEdit={handleEditProject}  />
+            <ProjectCard project={project} onEdit={handleEditProject} onDelete={oneDeleteProject}  />
           </div>
         ))}
       </div>

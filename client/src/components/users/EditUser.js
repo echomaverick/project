@@ -24,29 +24,54 @@ const EditUser = () => {
     loadUser();
   }, []);
 
+  // const onSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+  
+  //   try {
+  //     const token = localStorage.getItem("accessToken"); // Assuming you store the token in localStorage
+  //     await axios.put(`http://localhost:5000/api/users/${token}`, user, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     console.log(user);
+  
+  //     setLoading(false);
+  //     loadUser();
+  //     history.push("/");
+  //   } catch (error) {
+  //     setLoading(false);
+  //     console.log(error);
+  //     console.error("Error updating user:", error);
+  //   }
+  // };
+  
+
   const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
   
     try {
       const token = localStorage.getItem("accessToken"); // Assuming you store the token in localStorage
-      await axios.put(`http://localhost:5000/api/users/${id}`, user, {
+      await axios.put("http://localhost:5000/api/users", user, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(user);
   
       setLoading(false);
       loadUser();
       history.push("/");
     } catch (error) {
       setLoading(false);
-      console.log(error);
       console.error("Error updating user:", error);
     }
   };
   
+
+
+
 
   const loadUser = async () => {
     try {

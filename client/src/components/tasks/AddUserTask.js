@@ -10,6 +10,7 @@ const AddUserTask = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const [dueDate, setDueDate] = useState("");
 
   useEffect(() => {
     fetchAvailableData();
@@ -133,6 +134,7 @@ const AddUserTask = () => {
           title,
           description,
           assignedTo: selectedUsers,
+          dueDate,
         }
       );
 
@@ -303,6 +305,14 @@ const AddUserTask = () => {
               )}
             </div>
             {errors.users && <div className="text-danger">{errors.users}</div>}
+          </div>
+          <div className="form-group mb-3">
+            <label htmlFor="dueDate" className="form-label">
+              Due Date and Time
+            </label>
+            <input type="datetime-local" id="dueDate" className="form-control form-control-lg" value={dueDate} onChange={(e) => setDueDate(e.target.value)}
+            required/>
+            {errors.dueDate && <div className="text-danger">{errors.dueDate}</div>}
           </div>
           <div className="d-flex justify-content-start">
             <button

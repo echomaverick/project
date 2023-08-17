@@ -11,6 +11,7 @@ const Task = () => {
     description: "",
     users: [],
     projects: [],
+    dueDate: "",
   });
 
   const { id } = useParams();
@@ -104,6 +105,16 @@ const Task = () => {
                   <p>
                     <strong>Description:</strong> {task.description}
                   </p>
+                  <p
+                    className={
+                      new Date(task.dueDate) < new Date() ? "overdue" : ""
+                    }
+                  >
+                    <strong>Task Date and Time:</strong>{" "}
+                    {task.dueDate
+                      ? new Date(task.dueDate).toLocaleString()
+                      : "N/A"}
+                  </p>
                 </div>
               </div>
             </div>
@@ -167,69 +178,3 @@ const Task = () => {
 };
 
 export default Task;
-
-// import React, { useState, useEffect, useContext } from "react";
-// import { useParams, Link } from "react-router-dom";
-// import axios from "axios";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-// import { AuthContext } from "../layout/Auth";
-
-// const Task = () => {
-//   const { user } = useContext(AuthContext);
-//   const [loading, setLoading] = useState(true);
-//   const [tasks, setTasks] = useState([]);
-
-//   const { id } = useParams();
-//   const objectIdRegex = /^[0-9a-fA-F]{24}$/;
-
-//   useEffect(() => {
-//     if (user) {
-//       fetchTasksForUser(user.username);
-//     }
-//   }, [user]);
-
-//   const fetchTasksForUser = async (username) => {
-//     try {
-//       setLoading(true);
-
-//       const res = await axios.get(`/api/tasks/user/${username}`);
-//       setTasks(res.data);
-//     } catch (error) {
-//       console.error("Error fetching tasks:", error);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return (
-//     <div className="container py-4">
-//       {loading ? (
-//         <div className="loader-container">
-//           <div className="loader"></div>
-//         </div>
-//       ) : (
-//         <>
-//           <Link className="btn btn-primary mb-4" to="/tasks">
-//             <FontAwesomeIcon icon={faArrowLeft} className="me-2" /> Go back to tasks
-//           </Link>
-//           <h1>Your Tasks</h1>
-//           {tasks.length > 0 ? (
-//             <ul>
-//               {tasks.map((task) => (
-//                 <li key={task._id}>
-//                   <h2>{task.title}</h2>
-//                   <p><strong>Description:</strong> {task.description}</p>
-//                 </li>
-//               ))}
-//             </ul>
-//           ) : (
-//             <p>You have no tasks.</p>
-//           )}
-//         </>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default Task;
