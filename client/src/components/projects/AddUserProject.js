@@ -49,14 +49,20 @@ const AddUserProject = () => {
 
     if (!projectDescriptionRegex.test(description)) {
       newErrors.description =
-        "Description should only contain letters and spaces.";
+        "Project description should only contain letters and spaces.";
     } else if (
       description.trim() !== "" &&
       description[0] !== description[0].toUpperCase()
     ) {
       newErrors.description =
-        "Description should start with an uppercase letter.";
+        "Project description should start with an uppercase letter.";
     }
+
+    const currentDate = new Date();
+const selectedDueDate = new Date(dueDate.replace(/-/g, '/')); // Convert to valid format
+if (selectedDueDate < currentDate) {
+  newErrors.dueDate = "Due date cannot be in the past!";
+}
 
     if (selectedUsers.length === 0 || selectedTasks.length === 0) {
       newErrors.users = "Please select at least one user and one task.";
@@ -78,7 +84,7 @@ const AddUserProject = () => {
       description,
       users: selectedUsers.map((user) => user._id),
       tasks: selectedTasks.map((task) => task._id),
-      dueDate: formattedDueDate
+      dueDate: formattedDueDate,
     };
 
     try {
@@ -111,7 +117,7 @@ const AddUserProject = () => {
         description: addedProject.description,
         tasks: taskDetails,
         users: userDetails,
-        dueDate,
+        dueDate: dueDate
       });
 
       console.log("Project added successfully:", response.data);
@@ -135,7 +141,7 @@ const AddUserProject = () => {
 
   const handleUserToggle = (userId) => {
     setSelectedUsers((prevSelectedUsers) =>
-      prevSelectedUsers.includes(userId)
+      prevSelectedUsers.some((user) => user._id === userId)
         ? prevSelectedUsers.filter((user) => user._id !== userId)
         : [
             ...prevSelectedUsers,
@@ -358,9 +364,17 @@ const AddUserProject = () => {
             <label htmlFor="dueDate" className="form-label">
               Due Date and Time
             </label>
-            <input type="datetime-local" id="dueDate" className="form-control form-control-lg" value={dueDate} onChange={(e) => setDueDate(e.target.value)}
-            required/>
-            {errors.dueDate && <div className="text-danger">{errors.dueDate}</div>}
+            <input
+              type="datetime-local"
+              id="dueDate"
+              className="form-control form-control-lg"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+              required
+            />
+            {errors.dueDate && (
+              <div className="text-danger">{errors.dueDate}</div>
+            )}
           </div>
           <div className="d-flex justify-content-start">
             <button

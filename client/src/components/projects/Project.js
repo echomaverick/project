@@ -48,11 +48,18 @@ const Projects = () => {
     <div className="container py-4">
       <div className="card shadow">
         <div className="card-body">
-          <Link className="btn btn-primary" to="/projects">
+          {/* <Link className="btn btn-primary" to="/projects">
             <FontAwesomeIcon icon={faArrowLeft} className="me-2" />
             Go back to projects
-          </Link>
-
+          </Link> */}
+           {selectedProject && (
+            <Link
+              to={`/projects/user/${selectedProject.users[0].username}`}
+              className="btn btn-primary mb-4"
+            >
+              <FontAwesomeIcon icon={faArrowLeft} className="me-2" /> Go back to user projects
+            </Link>
+          )}
           <hr />
           <h2 className="border-bottom pb-3">Projects</h2>
           {loading ? (
@@ -71,7 +78,7 @@ const Projects = () => {
                 <p
                     className={
                       new Date(selectedProject.dueDate) < new Date() ? "overdue" : ""
-                    }
+                    } style={{color: "red"}}
                   >
                     <strong>Project Date and Time:</strong>{" "}
                     {selectedProject.dueDate

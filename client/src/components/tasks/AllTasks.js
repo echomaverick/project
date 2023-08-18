@@ -5,7 +5,7 @@ import "../styles/alltasks.css";
 import SkeletonUserCard from "../users/SkeletonUserCard";
 import Pagination from "react-bootstrap/Pagination";
 
-const TaskCard = ({ task, onDelete }) => {
+const TaskCard = ({ task, onDelete, markTaskAsCompleted }) => {
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   const handleDelete = () => {
@@ -62,14 +62,16 @@ const TaskCard = ({ task, onDelete }) => {
         ) : (
           <div className="btn-group">
             <Link
-              className="btn btn-primary btn-rounded"
+              className={`btn btn-primary btn-rounded ${task.completed ? 'disabled' : ''}`}
               to={`/tasks/${task._id}`}
+              disabled={task.completed}
             >
               View
             </Link>
             <Link
-              className="btn btn-outline-primary btn-rounded"
+               className={`btn btn-primary btn-rounded ${task.completed ? 'disabled' : ''}`}
               to={`/tasks/edit/${task._id}`}
+              disabled={task.completed}
             >
               Edit
             </Link>
@@ -79,6 +81,13 @@ const TaskCard = ({ task, onDelete }) => {
             >
               Delete
             </button>
+            <button
+              className="btn btn-success btn-rounded ml-2"
+              onClick={() => markTaskAsCompleted(task._id)}
+              disabled={task.completed}
+            >
+              Completed
+            </button>
           </div>
         )}
         {showConfirmation && <div className="popup-shadow"></div>}
@@ -86,6 +95,7 @@ const TaskCard = ({ task, onDelete }) => {
     </div>
   );
 };
+
 const AllTasks = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -160,6 +170,20 @@ const AllTasks = () => {
     setSearchTerm("");
   };
 
+
+  const markTaskAsCompleted = async (taskId) => {
+    try {
+      await axios.put(`http://localhost:5000/api/tasks/${taskId}/completed`,{
+        completed: true,
+        dueDate: new Date()
+      });
+      console.log("Task is marked as completed", taskId);
+      loadTasks();
+    } catch (error) {
+      console.error("Error marking task as completed:", error);
+    }
+  };
+
   return (
     <div className="container">
       <div className={`py-4`}>
@@ -196,7 +220,11 @@ const AllTasks = () => {
           ) : (
             currentTasks.map((task) => (
               <div className="col-md-6 col-lg-4 mb-4" key={task._id}>
-                <TaskCard task={task} onDelete={deleteTask} />
+                <TaskCard
+                  task={task}
+                  onDelete={deleteTask}
+                  markTaskAsCompleted={markTaskAsCompleted}
+                />
               </div>
             ))
           )}

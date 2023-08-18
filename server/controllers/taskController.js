@@ -39,6 +39,10 @@ const createTask = async (req, res) => {
         .json({ error: "Invalid user ID! User does not exist." });
     }
 
+    if(!dueDate || new Date(dueDate) < new Date()){
+      return res.status(404).json({error: "Invalid due date! Date should not be in the past!"});
+    }
+
     const newTask = new Task({
       title,
       description,
@@ -106,7 +110,7 @@ const getTaskById = async (req, res) => {
 const updateTask = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, assignedTo, projects } = req.body;
+    const { title, description, assignedTo, projects, completed } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(404).json({ error: "Invalid task ID" });
@@ -162,6 +166,7 @@ const updateTask = async (req, res) => {
     task.description = description;
     task.projects = projects;
     task.assignedTo = assignedTo;
+    task.completed = completed;
 
     const updatedTask = await task.save();
 
@@ -207,6 +212,37 @@ const getTasksForUserByUsername = async (req, res) => {
   }
 };
 
+
+//completed
+const markTaskAsCompleted = async (req, res) => {
+  try {
+    const taskId = req.params.id;
+
+    if (!mongoose.Types.ObjectId.isValid(taskId)) {
+      return res.status(404).json({ error: "Invalid task ID" });
+    }
+
+    const task = await Task.findById(taskId);
+
+    if (!task) {
+      return res.status(404).json({ error: "Task not found" });
+    }
+
+    task.completed = true;
+    task.completedAt = new Date();
+
+    // Exclude the dueDate field when updating the task
+    const updatedTask = await task.save();
+
+    res.status(200).json(updatedTask);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Failed to mark task as completed" });
+  }
+};
+
+
+
 module.exports = {
   createTask,
   getAllTasks,
@@ -214,4 +250,5 @@ module.exports = {
   updateTask,
   deleteTask,
   getTasksForUserByUsername,
+  markTaskAsCompleted
 };

@@ -8,5 +8,6 @@ router.get("/:id", taskController.getTaskById);
 router.put("/:id", taskController.updateTask);
 router.delete("/:id", taskController.deleteTask);
 router.get("/user/:username", taskController.getTasksForUserByUsername);
+router.put("/:id/completed", taskController.markTaskAsCompleted);
 
 module.exports = router;

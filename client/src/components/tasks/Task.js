@@ -31,7 +31,10 @@ const Task = () => {
 
     try {
       console.log("Fetching task data...");
-      const res = await axios.get(`http://localhost:5000/api/tasks/${id}`);
+      // const res = await axios.get(`http://localhost:5000/api/tasks/${id}`);
+      const res = await axios.get(
+        `http://localhost:5000/api/tasks/${id}?_=${new Date().getTime()}`
+      );
       console.log("Task data:", res.data);
       setTask(res.data);
 
@@ -108,7 +111,7 @@ const Task = () => {
                   <p
                     className={
                       new Date(task.dueDate) < new Date() ? "overdue" : ""
-                    }
+                    } style={{color: "red"}}
                   >
                     <strong>Task Date and Time:</strong>{" "}
                     {task.dueDate
