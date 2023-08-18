@@ -45,6 +45,7 @@ const ProjectCard = ({ project, onDelete, onEdit }) => {
               <button
                 className="btn1 btn-danger btn-rounded"
                 onClick={confirmDelete}
+                onDelete={() => handleDelete(project)}
               >
                 Delete
               </button>
@@ -149,7 +150,7 @@ const AllProjects = () => {
       try {
         await deleteProject(selectedProject);
         setSelectedProject(null);
-        setShowConfirmation(false); 
+        setShowConfirmation(false);
       } catch (error) {
         console.error("Error deleting project:", error);
       }
@@ -158,9 +159,8 @@ const AllProjects = () => {
 
   const cancelDelete = () => {
     setSelectedProject(null);
-    setShowConfirmation(false); 
+    setShowConfirmation(false);
   };
-
 
   const paginate = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -299,7 +299,6 @@ const AllProjects = () => {
             <button
               className="btn1 btn-danger btn-rounded"
               onClick={confirmDelete}
-              onDelete={handleDelete(projects)}
             >
               Delete
             </button>
