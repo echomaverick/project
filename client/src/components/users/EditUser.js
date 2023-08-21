@@ -53,7 +53,7 @@ const EditUser = () => {
     setLoading(true);
   
     try {
-      const token = localStorage.getItem("accessToken"); // Assuming you store the token in localStorage
+      const token = localStorage.getItem("accessToken"); 
       await axios.put("http://localhost:5000/api/users", user, {
         headers: {
           Authorization: `Bearer ${token}`,
