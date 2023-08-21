@@ -7,6 +7,7 @@ const projectRoutes = require('./routes/projectRoutes');
 const searchRoutes = require('./routes/searchRoutes');
 const dotenv = require('dotenv');
 const emailRoutes = require('./routes/emailRoutes');
+const serveless = require('serverless-http');
 
 dotenv.config();
 const secretKey = process.env.SECRET_KEY;
@@ -27,6 +28,9 @@ app.use('/api/emails', emailRoutes);
 
 app.use('/api/search/projects', searchRoutes);
 
-app.listen(5000, () => {
-  console.log(`Server started on port 5000`);
-});
+// app.listen(5000, () => {
+//   console.log(`Server started on port 5000`);
+// });
+
+
+module.exports.handler = serveless(app);
